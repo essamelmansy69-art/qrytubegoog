@@ -48,13 +48,37 @@ const TRANSLATIONS = {
     removeLogo: 'إزالة',
     
     download: '✨ توليد الـ QR السحري الآن ✨',
+    downloading: 'جاري توليد وتحميل كود الـ QR... ⚡',
+    downloaded: 'تم التحميل بنجاح! 🎉',
     downloadSVG: 'تصدير بصيغة SVG',
     copy: 'نسخ الرابط الذكي',
     copied: 'تم النسخ!',
     
+    errorInvalidUrl: '⚠️ الرجاء إدخال رابط صحيح أو اسم مستخدم صالح للمنصة المختارة!',
+    
     seoTitle: 'أفضل أداة لإنشاء روابط ذكية (Deep Links) وكود QR - Qrytube',
     seoDescription: 'حوّل روابط انستجرام، يوتيوب، وتيك توك إلى روابط ذكية تفتح التطبيق مباشرة. تخطى المتصفح الداخلي وضاعف معدل التحويل والمتابعات بنقرة واحدة.',
     
+    faqTitle: 'الأسئلة الشائعة حول الروابط الذكية وأكواد الـ QR 💬',
+    faqItems: [
+      {
+        q: 'ما هو الرابط الذكي للسوشيال ميديا (Social Media Deep Link)؟',
+        a: 'الرابط الذكي أو الرابط العميق (Deep Link) هو تقنية ذكية تقوم بتحويل الرابط العادي ليقوم بتوجيه الزائر مباشرة لفتح التطبيق الرسمي المثبت على هاتفه (مثل تطبيق يوتيوب أو إنستجرام)، بدلاً من فتح نسخة الويب البطيئة داخل المتصفح الداخلي الافتراضي والتي تتطلب تسجيل الدخول.'
+      },
+      {
+        q: 'لماذا يفتح المتصفح الافتراضي في بعض الأحيان بدلاً من التطبيق؟',
+        a: 'بعض التطبيقات مثل فيسبوك أو ماسنجر تمتلك متصفحات داخلية مغلقة تحاول إبقاء المستخدم داخل تطبيقها. يقوم نظام Qrytube باستخدام بروتوكولات توجيه مطورة وتلقائية لتخطي هذا القيد وإجبار نظام الهاتف على فتح التطبيق الرسمي مباشرة.'
+      },
+      {
+        q: 'هل هذا المولد مجاني بالكامل وهل معلوماتي آمنة؟',
+        a: 'نعم، الأداة مجانية 100% وبدون أي حدود للتوليد! كما أن العملية تتم بالكامل محلياً داخل متصفحك (Client-Side)، فلا يتم تخزين روابطك أو بياناتك في أي خادم خارجي لتوفير أقصى درجات الأمان والخصوصية المطلقة.'
+      },
+      {
+        q: 'كيف يمكنني الاستفادة القصوى من كود الـ QR بعد توليده؟',
+        a: 'ننصح برفع شعار علامتك التجارية أو أيقونة المنصة المختارة في منتصف كود الـ QR لتعزيز الثقة بنسبة 80%، ثم يمكنك طباعة الكود على المنتجات، العلب، الكروت الشخصية، أو مشاركته رقمياً لمسح سريع ونمو هائل للمتابعين.'
+      }
+    ],
+
     features: [
       {
         title: 'فتح التطبيق مباشرة',
@@ -115,13 +139,37 @@ const TRANSLATIONS = {
     removeLogo: 'Remove',
     
     download: '✨ Generate Magic QR Code Now ✨',
+    downloading: 'Generating & Downloading QR Code... ⚡',
+    downloaded: 'Downloaded successfully! 🎉',
     downloadSVG: 'Export as SVG',
     copy: 'Copy Smart Link',
     copied: 'Copied!',
     
+    errorInvalidUrl: '⚠️ Please enter a valid URL or username for the selected platform!',
+    
     seoTitle: 'Qrytube - The Premier Deep Link & Smart QR Code Engine',
     seoDescription: 'Convert Instagram, YouTube, and TikTok links into smart deep links that launch apps directly. Skip internal browsers and triple your conversion rate with one click.',
     
+    faqTitle: 'Frequently Asked Questions (FAQ) 💬',
+    faqItems: [
+      {
+        q: 'What is a Social Media Deep Link?',
+        a: 'A Deep Link is a smart routing technology that redirects users directly to your official profile inside native mobile apps (like YouTube, Instagram, TikTok) rather than rendering a slow, unauthenticated web browser view.'
+      },
+      {
+        q: 'Why does the default browser open instead of the official app sometimes?',
+        a: 'Certain in-app browsers associated with apps like Facebook or Messenger attempt to confine users. Qrytube integrates sophisticated, auto-updated routing protocols to bypass these blocks and open your official app natively.'
+      },
+      {
+        q: 'Is this QR code generator safe and free?',
+        a: 'Yes, absolutely! Our generator is 100% free with unlimited downloads. All validation, rendering, and processing take place strictly client-side inside your browser (local environment), meaning your confidential links are never saved or harvested on secondary servers.'
+      },
+      {
+        q: 'How can I maximize my custom QR code conversion?',
+        a: 'We strongly suggest placing your brand logo or the official platform icon in the middle of your QR code to boost scanning rates by up to 80%. Then, print it on product boxes, flyers, business cards, or publish it digitally.'
+      }
+    ],
+
     features: [
       {
         title: 'Instant App Launch',
@@ -139,9 +187,9 @@ const TRANSLATIONS = {
     
     howItWorksTitle: 'How Qrytube Works',
     steps: [
-      'Select your target platform from our optimized list.',
-      'Paste your original URL or social media handle.',
-      'Use the generated Smart Link or QR code instantly.'
+      'Choose your platform (Instagram, YouTube, TikTok, etc.).',
+      'Paste your original channel URL or username inside the input box.',
+      'Instantly get your smart deep link and print-ready QR code.'
     ],
 
     footer: 'Qrytube Deep Routing & Smart QR-Code System 2026',
@@ -174,8 +222,45 @@ function HomeContent({ lang }: { lang: Language }) {
   const [logo, setLogo] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [qrColor, setQrColor] = useState('#000000');
+  const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = TRANSLATIONS[lang];
+
+  const validateInput = useCallback((val: string, plat: Platform): boolean => {
+    const clean = val.trim();
+    if (!clean) return false;
+    
+    // In order to support both simple social handles like '@instagram' AND full links, we have standard logic
+    if (plat === 'general') {
+      const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+      return pattern.test(clean);
+    }
+    
+    // For social platforms, usernames (no dot or slashes) or valid URLs are fine
+    if (clean.includes('.') || clean.includes('/')) {
+      const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+      return pattern.test(clean);
+    }
+    
+    return /^[a-zA-Z0-9_\-\.\@]+$/.test(clean);
+  }, []);
+
+  useEffect(() => {
+    const clean = url.trim();
+    if (clean === '') {
+      setError(null);
+    } else {
+      const isValid = validateInput(clean, platform);
+      if (!isValid) {
+        setError(t.errorInvalidUrl);
+      } else {
+        setError(null);
+      }
+    }
+  }, [url, platform, validateInput, t.errorInvalidUrl]);
 
   const getDeepLink = useCallback((input: string, plat: Platform) => {
     if (!input) return '';
@@ -205,6 +290,36 @@ function HomeContent({ lang }: { lang: Language }) {
   const generateQR = useCallback(async () => {
     if (!canvasRef.current) return;
     
+    const clean = url.trim();
+    if (clean !== '' && !validateInput(clean, platform)) {
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, 1000, 1000);
+        ctx.fillStyle = '#fef2f2';
+        ctx.fillRect(0, 0, 1000, 1000);
+        ctx.fillStyle = '#ef4444';
+        
+        ctx.beginPath();
+        ctx.arc(500, 420, 80, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 90px Cairo, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('!', 500, 425);
+        
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 44px Cairo, sans-serif';
+        ctx.fillText(lang === 'ar' ? 'الرجاء إدخال اسم مستخدم أو رابط صالح' : 'Please enter a valid link or username', 500, 580);
+        
+        ctx.fillStyle = '#64748b';
+        ctx.font = '500 32px Cairo, sans-serif';
+        ctx.fillText(lang === 'ar' ? 'تأكد من اختيار المنصة الصحيحة وكتابة المدخل بدقة' : 'Double check your target platform and spelling', 500, 650);
+      }
+      return;
+    }
+
     const finalUrl = getDeepLink(url || 'https://qrytube.app', platform);
     
     try {
@@ -256,7 +371,7 @@ function HomeContent({ lang }: { lang: Language }) {
     } catch (err) {
       console.error(err);
     }
-  }, [url, platform, logo, qrColor, getDeepLink]);
+  }, [url, platform, logo, qrColor, getDeepLink, validateInput, lang]);
 
   useEffect(() => {
     generateQR();
@@ -266,7 +381,39 @@ function HomeContent({ lang }: { lang: Language }) {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => setLogo(event.target?.result as string);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const maxDim = 50; // Constrained 50x50 px max size to avoid QR scan blocks
+          const canvas = document.createElement('canvas');
+          let w = img.width;
+          let h = img.height;
+          
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          
+          canvas.width = maxDim;
+          canvas.height = maxDim;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, maxDim, maxDim);
+            const x = (maxDim - w) / 2;
+            const y = (maxDim - h) / 2;
+            ctx.drawImage(img, x, y, w, h);
+            setLogo(canvas.toDataURL('image/png'));
+          } else {
+            setLogo(event.target?.result as string);
+          }
+        };
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -277,6 +424,20 @@ function HomeContent({ lang }: { lang: Language }) {
     link.download = `qrytube-qr-${platform}.png`;
     link.href = canvasRef.current.toDataURL('image/png', 1.0);
     link.click();
+  };
+
+  const handleDownloadPNGClick = () => {
+    if (!url || error) return;
+    setDownloading(true);
+    setDownloaded(false);
+    
+    downloadPNG();
+    
+    setTimeout(() => {
+      setDownloading(false);
+      setDownloaded(true);
+      setTimeout(() => setDownloaded(false), 2000);
+    }, 1200);
   };
 
   const downloadSVG = async () => {
@@ -405,10 +566,26 @@ function HomeContent({ lang }: { lang: Language }) {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder={t.placeholderUrl}
-                  className="w-full bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 px-5 outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium text-slate-800 placeholder:text-slate-500"
+                  className={`w-full bg-slate-50/70 border rounded-2xl p-4 px-5 outline-none focus:bg-white transition-all text-sm font-medium focus:ring-4 duration-300 ${
+                    error 
+                      ? 'border-red-400 focus:border-red-500 focus:ring-red-100 placeholder:text-red-300 text-red-900 bg-red-50/10' 
+                      : 'border-slate-200/80 focus:border-indigo-500 focus:ring-indigo-100 placeholder:text-slate-500 text-slate-800'
+                  }`}
                   dir="ltr"
                 />
               </div>
+              <AnimatePresence>
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="text-xs font-bold text-red-500 mt-1 flex items-center gap-1 leading-relaxed"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Customization Row (Logo & Custom Color) */}
@@ -466,13 +643,30 @@ function HomeContent({ lang }: { lang: Language }) {
             {/* Magic Purple Gradient Action Button */}
             <div className="pt-2">
               <button
-                onClick={downloadPNG}
-                disabled={!url}
-                className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:opacity-95 text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-indigo-500/10 transition-all disabled:from-slate-100 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic"
+                onClick={handleDownloadPNGClick}
+                disabled={!url || !!error}
+                className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:opacity-95 text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-indigo-500/10 transition-all disabled:from-slate-150 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic relative overflow-hidden"
               >
-                <span>✨</span>
-                <span>{t.download}</span>
-                <span className="group-hover/magic:translate-x-1 transition-transform">⚡</span>
+                {downloading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>{t.downloading}</span>
+                  </>
+                ) : downloaded ? (
+                  <>
+                    <Check className="w-5 h-5 text-emerald-300 animate-bounce" />
+                    <span>{t.downloaded}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>✨</span>
+                    <span>{t.download}</span>
+                    <span className="group-hover/magic:translate-x-1 transition-transform">⚡</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -500,7 +694,7 @@ function HomeContent({ lang }: { lang: Language }) {
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={downloadSVG}
-                disabled={!url}
+                disabled={!url || !!error}
                 aria-label={t.downloadSVG}
                 className="bg-slate-50 border border-slate-200/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2 font-sans"
               >
@@ -509,7 +703,7 @@ function HomeContent({ lang }: { lang: Language }) {
               </button>
               <button 
                 onClick={copyUrl}
-                disabled={!url}
+                disabled={!url || !!error}
                 aria-label={t.copy}
                 className="bg-slate-50 border border-slate-200/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2 font-sans"
               >
@@ -566,6 +760,45 @@ function HomeContent({ lang }: { lang: Language }) {
               <p className="font-bold text-slate-800">{step}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Accordion List FAQ block */}
+      <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-8 shadow-custom-card">
+        <h3 className="text-2xl md:text-3xl font-black text-slate-950 text-center tracking-tight">
+          {t.faqTitle}
+        </h3>
+        <div className="space-y-4 max-w-4xl mx-auto">
+          {t.faqItems.map((item, index) => {
+            const isOpen = openFaq === index;
+            return (
+              <div 
+                key={index} 
+                className="border border-slate-100 rounded-2xl overflow-hidden transition-all bg-slate-50/40 hover:bg-slate-50"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : index)}
+                  className="w-full text-start p-5 px-6 font-bold text-slate-800 flex items-center justify-between gap-4 select-none focus:outline-none"
+                >
+                  <span className="text-sm md:text-base">{item.q}</span>
+                  <span className={`text-indigo-600 font-bold text-xs transition-transform duration-350 ${isOpen ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                <motion.div
+                  initial={false}
+                  animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+                  transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-6 pt-0 text-xs md:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-white font-medium">
+                    {item.a}
+                  </div>
+                </motion.div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
