@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import QRCode from 'qrcode';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   QrCode, 
@@ -210,7 +209,9 @@ function HomeContent({ lang }: { lang: Language }) {
     
     try {
       const tempCanvas = document.createElement('canvas');
-      await QRCode.toCanvas(tempCanvas, finalUrl, {
+      const qrcodeModule = await import('qrcode');
+      const qrObj = qrcodeModule.default || qrcodeModule;
+      await qrObj.toCanvas(tempCanvas, finalUrl, {
         width: 1000,
         margin: 1,
         color: {
@@ -281,7 +282,9 @@ function HomeContent({ lang }: { lang: Language }) {
   const downloadSVG = async () => {
     const finalUrl = getDeepLink(url || 'https://qrytube.app', platform);
     try {
-      let svgString = await QRCode.toString(finalUrl, {
+      const qrcodeModule = await import('qrcode');
+      const qrObj = qrcodeModule.default || qrcodeModule;
+      let svgString = await qrObj.toString(finalUrl, {
         type: 'svg',
         width: 800,
         margin: 1,

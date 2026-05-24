@@ -283,14 +283,18 @@ export function generateSingleFileHTML(name: string = "الرابط الذكي")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${name} - مولد كود QR الذكي لمنصات التواصل</title>
-    <!-- Google Fonts: Cairo -->
+    <!-- Preconnect to Font & CDN domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    
+    <!-- Google Fonts: Cairo -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous" defer></script>
     <!-- QRCode.js Library CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous" defer></script>
     <script>
         tailwind.config = {
             theme: {
