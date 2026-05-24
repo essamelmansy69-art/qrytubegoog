@@ -225,6 +225,8 @@ function HomeContent({ lang }: { lang: Language }) {
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
+  const [downloadingSvg, setDownloadingSvg] = useState(false);
+  const [downloadedSvg, setDownloadedSvg] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = TRANSLATIONS[lang];
@@ -528,13 +530,16 @@ function HomeContent({ lang }: { lang: Language }) {
   };
 
   const downloadSVG = async () => {
+    if (!url || error) return;
+    setDownloadingSvg(true);
+    setDownloadedSvg(false);
+
     const finalUrl = getDeepLink(url || 'https://qrytube.app', platform);
     try {
       const qrcodeModule = await import('qrcode');
       const qrObj = qrcodeModule.default || qrcodeModule;
       let svgString = await qrObj.toString(finalUrl, {
         type: 'svg',
-        width: 800,
         margin: 1,
         color: {
           dark: qrColor,
@@ -543,26 +548,35 @@ function HomeContent({ lang }: { lang: Language }) {
         errorCorrectionLevel: 'H',
       });
 
-      // Ensure xmlns:xlink is present on the <svg> tag for image compatibility
+      // Ensure xmlns:xlink namespace definition is present on the <svg> tag for image compatibility
       if (!svgString.includes('xmlns:xlink=')) {
-        svgString = svgString.replace('<svg ', '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ');
+        svgString = svgString.replace(/<svg/i, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
       }
 
-      // Add a distinct solid white background rect to avoid transparent-to-black rendering artifacts in mobile dark-mode galleries
+      // 1. Extract viewBox and calculate coordinate dimensions safely
+      const viewBoxMatch = svgString.match(/viewBox=["']\s*0\s+0\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s*["']/i);
+      let qrSize = 33; // standard default
+      if (viewBoxMatch) {
+        qrSize = parseFloat(viewBoxMatch[1]);
+      }
+
+      // Add a distinct solid white background rect to handle dark-mode client renderers properly
       const svgTagEnd = svgString.indexOf('>') + 1;
-      const baseRect = `<rect width="100%" height="100%" fill="#ffffff" />`;
+      const baseRect = `<rect width="${qrSize.toFixed(4)}" height="${qrSize.toFixed(4)}" fill="#ffffff" />`;
       let finalSvg = svgString.slice(0, svgTagEnd) + baseRect + svgString.slice(svgTagEnd);
 
+      // Embedded dynamic logo rendering
       if (logo) {
-        const logoSize = 160;
-        const logoPos = (800 - logoSize) / 2;
-        const padding = logoSize * 0.15;
+        const logoRatio = 0.22; // ideal size (22%)
+        const logoSize = qrSize * logoRatio;
+        const logoPos = (qrSize - logoSize) / 2;
+        const padding = logoSize * 0.12;
         const bgSize = logoSize + padding * 2;
         const bgPos = logoPos - padding;
-        
-        // Append white rounded rect spacer block under the logo, then render the logo image with both href and xlink:href for maximum compatibility
-        const logoBg = `<rect x="${bgPos}" y="${bgPos}" width="${bgSize}" height="${bgSize}" rx="${logoSize * 0.2}" fill="#ffffff" />`;
-        const logoImage = `<image href="${logo}" xlink:href="${logo}" x="${logoPos}" y="${logoPos}" height="${logoSize}" width="${logoSize}" />`;
+        const rx = logoSize * 0.15;
+
+        const logoBg = `<rect x="${bgPos.toFixed(4)}" y="${bgPos.toFixed(4)}" width="${bgSize.toFixed(4)}" height="${bgSize.toFixed(4)}" rx="${rx.toFixed(4)}" fill="#ffffff" />`;
+        const logoImage = `<image href="${logo}" xlink:href="${logo}" x="${logoPos.toFixed(4)}" y="${logoPos.toFixed(4)}" height="${logoSize.toFixed(4)}" width="${logoSize.toFixed(4)}" />`;
         
         finalSvg = finalSvg.replace('</svg>', `${logoBg}${logoImage}</svg>`);
       }
@@ -571,11 +585,18 @@ function HomeContent({ lang }: { lang: Language }) {
       const dlUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = dlUrl;
-      link.download = `qrytube-vector.svg`;
+      link.download = `qrytube-vector-${platform}.svg`;
       link.click();
       URL.revokeObjectURL(dlUrl);
+
+      setTimeout(() => {
+        setDownloadingSvg(false);
+        setDownloadedSvg(true);
+        setTimeout(() => setDownloadedSvg(false), 2000);
+      }, 1200);
     } catch (err) {
       console.error(err);
+      setDownloadingSvg(false);
     }
   };
 
@@ -855,12 +876,29 @@ function HomeContent({ lang }: { lang: Language }) {
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={downloadSVG}
-                disabled={!url || !!error}
+                disabled={!url || !!error || downloadingSvg}
                 aria-label={t.downloadSVG}
                 className="bg-slate-50 border border-slate-200/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2 font-sans"
               >
-                <Download className="w-4 h-4" />
-                {t.downloadSVG}
+                {downloadingSvg ? (
+                  <>
+                    <svg className="animate-spin h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>{lang === 'ar' ? 'جاري التحميل...' : 'Downloading...'}</span>
+                  </>
+                ) : downloadedSvg ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600 animate-bounce" />
+                    <span>{lang === 'ar' ? 'تم التحميل!' : 'Downloaded!'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span>{t.downloadSVG}</span>
+                  </>
+                )}
               </button>
               <button 
                 onClick={copyUrl}
