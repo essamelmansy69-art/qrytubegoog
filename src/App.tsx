@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import { 
   QrCode, 
   Link as LinkIcon, 
@@ -15,7 +15,11 @@ import {
   Globe, 
   RefreshCw,
   ExternalLink,
-  Github
+  Github,
+  Shield,
+  FileText,
+  Mail,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import QRCode from 'qrcode';
@@ -107,6 +111,14 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+
+  // Legal & Contact state attributes
+  const [activeModal, setActiveModal] = useState<'none' | 'privacy' | 'terms' | 'contact'>('none');
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactSubject, setContactSubject] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactSubmitted, setContactSubmitted] = useState(false);
 
   // Viral state attributes
   const [qrFrameStyle, setQrFrameStyle] = useState<'none' | 'simple' | 'badge' | 'neon'>('simple');
@@ -291,6 +303,22 @@ export default function App() {
     setCopiedCampaign(true);
     playSuccessSound();
     setTimeout(() => setCopiedCampaign(false), 2000);
+  };
+
+  const handleContactSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!contactName || !contactEmail || !contactMessage) return;
+    setContactSubmitted(true);
+    playSuccessSound();
+  };
+
+  const handleCloseModal = () => {
+    setActiveModal('none');
+    setContactSubmitted(false);
+    setContactName('');
+    setContactEmail('');
+    setContactSubject('');
+    setContactMessage('');
   };
 
   // Preset Colors that pop
@@ -971,9 +999,242 @@ export default function App() {
             <span className="font-bold text-slate-600">الرابط الذكي</span>
             <span>- رفيقك الاحترافي في التفاعل</span>
           </div>
+
+          {/* Clean, interactive policy and contact links */}
+          <div className="flex flex-wrap items-center gap-4 font-semibold text-slate-500 my-1 sm:my-0">
+            <button 
+              onClick={() => setActiveModal('privacy')}
+              className="hover:text-indigo-600 cursor-pointer transition-colors"
+            >
+              سياسة الخصوصية
+            </button>
+            <span className="text-slate-200">|</span>
+            <button 
+              onClick={() => setActiveModal('terms')}
+              className="hover:text-indigo-600 cursor-pointer transition-colors"
+            >
+              شروط الخدمة
+            </button>
+            <span className="text-slate-200">|</span>
+            <button 
+              onClick={() => setActiveModal('contact')}
+              className="hover:text-indigo-600 cursor-pointer transition-colors flex items-center gap-1"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              اتصل بنا
+            </button>
+          </div>
+
           <p>© 2026. يعمل بالكامل في متصفحك (Client-side) وبسرعة قصوى مجاناً 100%.</p>
         </div>
       </footer>
+
+      {/* Interactive Overlay Modals for Legal Pages & Contact Us */}
+      <AnimatePresence>
+        {activeModal !== 'none' && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md"
+            onClick={handleCloseModal}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 15, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 15, opacity: 0 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="bg-white rounded-3xl border border-slate-200/95 max-w-lg w-full overflow-hidden shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              
+              {/* Header */}
+              <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                    {activeModal === 'privacy' && <Shield className="w-4.5 h-4.5" />}
+                    {activeModal === 'terms' && <FileText className="w-4.5 h-4.5" />}
+                    {activeModal === 'contact' && <Mail className="w-4.5 h-4.5" />}
+                  </div>
+                  <h3 className="font-extrabold text-slate-800 text-sm">
+                    {activeModal === 'privacy' && 'سياسة الخصوصية وحماية البيانات المحلية'}
+                    {activeModal === 'terms' && 'شروط الاستخدام والأمان الرقمي'}
+                    {activeModal === 'contact' && 'اتصل بنا - تواصل مع فريق الدعم والحلول'}
+                  </h3>
+                </div>
+                <button 
+                  onClick={handleCloseModal}
+                  className="p-1.5 rounded-lg hover:bg-slate-200/60 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Scrollable Content Modal */}
+              <div className="p-6 max-h-[70vh] overflow-y-auto text-right text-slate-600 space-y-4">
+                
+                {activeModal === 'privacy' && (
+                  <div className="space-y-4 text-xs sm:text-sm leading-relaxed">
+                    <p className="font-bold text-slate-800 text-sm">أهلاً بك في منصة "الرابط الذكي". خصوصيتك تقع في صلب اهتمامنا:</p>
+                    
+                    <div className="bg-emerald-50/50 border border-emerald-100/60 p-4 rounded-2xl flex gap-3">
+                      <span className="text-xl">🛡️</span>
+                      <p className="text-emerald-800 text-xs font-semibold leading-normal">
+                        <strong>خصوصية كاملة بقوة متصفحك:</strong> جميع العمليات لتوليد الروابط العميقة وتكوين كود الـ QR تتم محلياً ومباشرة داخل جهازك (Client-side). نحن لا نحتفظ بأي روابط في أي قواعد بيانات خارجية أو سيرفرات وسيطة.
+                      </p>
+                    </div>
+
+                    <div className="space-y-3.5">
+                      <h4 className="font-extrabold text-slate-800">1. البيانات التي نجمعها</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        منفعتنا الوحيدة هي أن نقدم لك أداة مجانية 100%. لا نقوم بجمع معلومات شخصية، ولا ملفات تخريبية، ولا بريد إلكتروني، ولا تتبع لموقعك بشكل مستمر.
+                      </p>
+
+                      <h4 className="font-extrabold text-slate-800">2. ملفات تعريف الارتباط (Cookies)</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        قد نستخدم ملفات تخزين محلية بسيطة (localStorage) داخل متصفحك فحسب لحفظ تفضيلات الألوان الخاصة بك، وحجم وتصميم كود الـ QR الذي صممته لتفادي إضاعة الوقت في زيارتك القادمة.
+                      </p>
+
+                      <h4 className="font-extrabold text-slate-800">3. جودة إعادة التوجيه والروابط الخارجية</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        الأداة تولد لك روابط عميقة (Deep links) مجانية بالكامل. هذه الروابط يتم فتحها مباشرة عبر البروتوكول الرسمي المُقدم من المنصات نفسها مثل (instagram://, snapchat://).
+                      </p>
+
+                      <h4 className="font-extrabold text-slate-800">4. أمان التنزيل والكود المصدري</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        جميع الأكواد البرمجية وصور الـ QR التي تُحملها من هنا خالية تماماً من الإضافات الضارة وبجودة فائقة، كما نتيح لك نسخ الكود البرمجي بالكامل (index.html) لاستضافته بنفسك لضمان تطلعك الكامل على الكود لشفافية لا تُقدّر بثمن.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeModal === 'terms' && (
+                  <div className="space-y-4 text-xs sm:text-sm leading-relaxed">
+                    <p className="font-bold text-slate-800 text-sm">بمجرّد استخدامك لأداة "الرابط الذكي" فإنك توافق على البنود والقواعد المذكورة أدناه:</p>
+
+                    <div className="space-y-3.5">
+                      <h4 className="font-extrabold text-slate-800">1. الاستخدام المشروع الخالي من الضرر</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        يُحظر تماماً استخدام مُولد "الرابط الذكي" في إنشاء أكواد QR أو روابط عميقة تقود إلى محتوى احتيالي، أو صفحات تصيّد (Phishing)، أو روابط تحتوي على برمجيات خبيثة أو مواد تنتهك الملكية الفكرية.
+                      </p>
+
+                      <h4 className="font-extrabold text-slate-800">2. إخلاء المسؤولية القانونية</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        الخدمة مُقدمة مجاناً "كما هي" دون أي وعود بضمان الاستقرار الكلي الخالي من الانقطاع. نحن لا نتحمل أي مسؤولية مباشرة أو غير مباشرة جراء استخدام الأكواد المولدة لأغراض تجارية، تسويقية أو شخصية.
+                      </p>
+
+                      <h4 className="font-extrabold text-slate-800">3. الاستهلاك والأشكال المشروعة</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        نوفر الخدمة والتحميلات وحلول الشيفرة المصدرية بشكل مفتوح غير محدود، ويحق لك استخدام الرسوم والرموز الإعلانية في الترويج لمتاجرك وقنواتك دون أي قيود ملكية أو تراخيص مدفوعة.
+                      </p>
+
+                      <h4 className="font-extrabold text-slate-800">4. تعديل شروط الخدمة</h4>
+                      <p className="text-slate-500 font-medium font-semibold">
+                        نحتفظ بالحق في إجراء أي تعديل أو إصلاح أو إضافة بنود تنظيمية لضمان سلامة الروابط وصحة التوجيه الرقمي في أي وقت نراه مناسباً.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeModal === 'contact' && (
+                  <div className="space-y-4">
+                    {contactSubmitted ? (
+                      <motion.div 
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="text-center py-8 px-4 space-y-3.5 flex flex-col items-center"
+                      >
+                        <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-3xl shadow-inner animate-bounce">
+                          ✓
+                        </div>
+                        <h4 className="font-black text-slate-800 text-base">تم إرسال رسالتك بنجاح وسرور! 🎉</h4>
+                        <p className="text-xs text-slate-500 font-semibold max-w-xs leading-normal mx-auto">
+                          نشكرك على تواصلك وثقتك بنا، سنقوم بمراجعة اقتراحاتك بخصوص كود الـ QR وأكواد التوجيه الذكية والرد عليك عبر بريدك الإلكتروني قريباً جداً.
+                        </p>
+                        <button
+                          onClick={handleCloseModal}
+                          className="mt-4 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100 cursor-pointer"
+                        >
+                          العودة للمنصة الرئيسية
+                        </button>
+                      </motion.div>
+                    ) : (
+                      <form onSubmit={handleContactSubmit} className="space-y-4 text-xs sm:text-sm text-right">
+                        <p className="text-xs text-slate-400 font-semibold mb-2 leading-relaxed">
+                          نحن نسعد بتلقي استفسارات منشئي المحتوى، المسوقين، والمطورين دوماً. املأ البيانات وسنتواصل معك بأسرع وقت:
+                        </p>
+                        
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 block">الاسم الكريم:</label>
+                          <input
+                            type="text"
+                            required
+                            value={contactName}
+                            onChange={(e) => setContactName(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-right text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                            placeholder="مثال: يوسف محمد"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 block">البريد الإلكتروني المفضل:</label>
+                          <input
+                            type="email"
+                            required
+                            value={contactEmail}
+                            onChange={(e) => setContactEmail(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-right text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                            placeholder="example@domain.com"
+                            dir="ltr"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 block">موضوع الرسالة (اختياري):</label>
+                          <input
+                            type="text"
+                            value={contactSubject}
+                            onChange={(e) => setContactSubject(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-right text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                            placeholder="مثال: اقتراح تطوير، مشكلة فنية، إلخ"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 block">مضمون رسالتك:</label>
+                          <textarea
+                            required
+                            rows={4}
+                            value={contactMessage}
+                            onChange={(e) => setContactMessage(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-right text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                            placeholder="اكتب اقتراحك بحرية تامة هنا..."
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-3 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-indigo-100 mt-2"
+                        >
+                          <Mail className="w-4 h-4" />
+                          <span>إرسال الرسالة الرقمية الآن</span>
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                )}
+
+              </div>
+
+              {/* Close footer line info */}
+              <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50/20 text-[10px] text-slate-400 font-semibold text-center select-none">
+                معالجة مشفرة وآمنة بنسبة 100% 🔒
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
