@@ -1,0 +1,6 @@
+{
+  "name": "الرابط الذكي",
+  "description": "توليد أكواد QR ذكية لشبكات التواصل الاجتماعي لفتح التطبيقات مباشرة تلقائياً وزيادة التفاعل والمتابعة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
