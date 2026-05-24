@@ -36,7 +36,7 @@ const TRANSLATIONS = {
     labelLogo: 'تخصيص الهوية والشعار',
     labelQrColor: 'لون كود QR',
     
-    placeholderUrl: 'مثال: https://youtube.com/watch?v=... أو https://youtu.be/...',
+    placeholderUrl: 'أدخل رابط قناة، فيديو، أو قائمة تشغيل يوتيوب...',
     
     general: 'رابط عام',
     instagram: 'Instagram',
@@ -54,7 +54,7 @@ const TRANSLATIONS = {
     copy: 'نسخ الرابط الذكي',
     copied: 'تم النسخ!',
     
-    errorInvalidUrl: '⚠️ الرجاء إدخال رابط يوتيوب أو اسم مستخدم صالح!',
+    errorInvalidUrl: '⚠️ الرجاء إدخال رابط يوتيوب صحيح (قناة، فيديو، أو قائمة تشغيل)!',
     
     seoTitle: 'يوتيوب إلى تطبيق | مولد روابط ذكية وكود QR لزيادة المشاهدات',
     seoDescription: 'حوّل روابط يوتيوب وسوشيال ميديا إلى روابط ذكية تفتح التطبيق الرسمي مباشرة وتخطى المتصفح الداخلي لزيادة تفاعلك واشتراكاتك بضغطة واحدة.',
@@ -127,7 +127,7 @@ const TRANSLATIONS = {
     labelLogo: 'Brand Identity & Logo Customization',
     labelQrColor: 'QR Code Color',
     
-    placeholderUrl: 'e.g., https://youtube.com/watch?v=... or https://youtu.be/...',
+    placeholderUrl: 'Enter a YouTube channel, video, or playlist link...',
     
     general: 'General Link',
     instagram: 'Instagram',
@@ -145,7 +145,7 @@ const TRANSLATIONS = {
     copy: 'Copy Smart Link',
     copied: 'Copied!',
     
-    errorInvalidUrl: '⚠️ Please enter a valid YouTube link or social username!',
+    errorInvalidUrl: '⚠️ Please enter a valid YouTube link (channel, video, or playlist)!',
     
     seoTitle: 'TubeJump | Smart Deep Link & QR Code Generator for YouTube',
     seoDescription: 'Convert standard social media profiles and YouTube video links into deep routing entities that open native mobile apps instantly and boost conversions.',
@@ -232,7 +232,7 @@ function HomeContent({ lang }: { lang: Language }) {
   const getPlaceholder = useCallback(() => {
     if (lang === 'ar') {
       switch (platform) {
-        case 'youtube': return 'مثال: https://youtube.com/watch?v=... أو https://youtu.be/...';
+        case 'youtube': return 'أدخل رابط قناة، فيديو، أو قائمة تشغيل يوتيوب...';
         case 'instagram': return 'مثال: https://instagram.com/profile أو اسم الحساب';
         case 'facebook': return 'مثال: https://facebook.com/page';
         case 'tiktok': return 'مثال: https://tiktok.com/@username';
@@ -240,7 +240,7 @@ function HomeContent({ lang }: { lang: Language }) {
       }
     } else {
       switch (platform) {
-        case 'youtube': return 'e.g., https://youtube.com/watch?v=... or https://youtu.be/...';
+        case 'youtube': return 'Enter a YouTube channel, video, or playlist link...';
         case 'instagram': return 'e.g., https://instagram.com/profile or username';
         case 'facebook': return 'e.g., https://facebook.com/page';
         case 'tiktok': return 'e.g., https://tiktok.com/@username';
@@ -253,15 +253,27 @@ function HomeContent({ lang }: { lang: Language }) {
     const clean = val.trim();
     if (!clean) return false;
     
-    // In order to support both simple social handles like '@instagram' AND full links, we have standard logic
+    if (plat === 'youtube') {
+      if (clean.includes('.') || clean.includes('/')) {
+        // Must contain youtube.com or youtu.be
+        const hasYtDomain = /youtube\.com|youtu\.be/i.test(clean);
+        if (!hasYtDomain) return false;
+        
+        // Support all YouTube URLs: watch?v=, shorts, playlists, user channels, etc.
+        const ytPattern = /^(https?:\/\/)?(www\.|m\.)?(youtube\.com|youtu\.be)(\/([a-zA-Z0-9_\-\.\/\?=&@#%+]*))?$/i;
+        return ytPattern.test(clean);
+      }
+      return /^[a-zA-Z0-9_\-\.\@]+$/.test(clean);
+    }
+    
     if (plat === 'general') {
-      const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+      const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([a-zA-Z0-9_\-\.\/\?=&@#%+]*)*\/?$/i;
       return pattern.test(clean);
     }
     
     // For social platforms, usernames (no dot or slashes) or valid URLs are fine
     if (clean.includes('.') || clean.includes('/')) {
-      const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+      const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([a-zA-Z0-9_\-\.\/\?=&@#%+]*)*\/?$/i;
       return pattern.test(clean);
     }
     
@@ -293,8 +305,63 @@ function HomeContent({ lang }: { lang: Language }) {
         }
         return `instagram://user?username=${clean}`;
       case 'youtube':
-        if (clean.includes('youtube.com/watch')) {
-          return clean.replace('https://www.youtube.com', 'vnd.youtube://').replace('https://youtube.com', 'vnd.youtube://');
+        let ytUrl = clean;
+        // Make sure it starts with a protocol if it's a domain so we can parse/normalize it safely
+        if (!/^https?:\/\//i.test(ytUrl) && (ytUrl.includes('.') || ytUrl.includes('/'))) {
+          ytUrl = 'https://' + ytUrl;
+        }
+        
+        try {
+          const urlObj = new URL(ytUrl);
+          const hostname = urlObj.hostname.toLowerCase();
+          
+          if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+            // Check for youtu.be short URL
+            if (hostname.includes('youtu.be')) {
+              const videoId = urlObj.pathname.slice(1);
+              const searchParams = urlObj.search;
+              return `vnd.youtube://www.youtube.com/watch?v=${videoId}${searchParams ? '&' + searchParams.slice(1) : ''}`;
+            }
+            
+            // Check for shorts URL style: /shorts/VIDEO_ID
+            if (urlObj.pathname.startsWith('/shorts/')) {
+              const videoId = urlObj.pathname.split('/')[2];
+              return `vnd.youtube://www.youtube.com/watch?v=${videoId}`;
+            }
+            
+            // Check for regular watch URL: /watch?v=VIDEO_ID
+            if (urlObj.pathname === '/watch' && urlObj.searchParams.has('v')) {
+              return `vnd.youtube://www.youtube.com${urlObj.pathname}${urlObj.search}`;
+            }
+            
+            // For playlists, channels, etc., replace the domain with vnd.youtube://
+            const pathAndQuery = urlObj.pathname + urlObj.search;
+            return `vnd.youtube://www.youtube.com${pathAndQuery}`;
+          }
+        } catch (e) {
+          // If URL parsing fails, fall back to basic string operations
+          if (clean.includes('youtu.be/')) {
+            const parts = clean.split('youtu.be/');
+            const videoId = parts[1]?.split('?')[0] || '';
+            return `vnd.youtube://www.youtube.com/watch?v=${videoId}`;
+          }
+          if (clean.includes('youtube.com/watch')) {
+            return clean.replace(/https?:\/\/(www\.|m\.)?youtube\.com/i, 'vnd.youtube://www.youtube.com');
+          }
+          if (clean.includes('youtube.com/shorts/')) {
+            const parts = clean.split('shorts/');
+            const videoId = parts[1]?.split('?')[0] || '';
+            return `vnd.youtube://www.youtube.com/watch?v=${videoId}`;
+          }
+          if (clean.includes('youtube.com/')) {
+            return clean.replace(/https?:\/\/(www\.|m\.)?youtube\.com/i, 'vnd.youtube://www.youtube.com');
+          }
+        }
+        
+        // If it's a simple username/handle (no dots, no slashes)
+        if (!clean.includes('.') && !clean.includes('/')) {
+          const handle = clean.startsWith('@') ? clean : `@${clean}`;
+          return `vnd.youtube://www.youtube.com/${handle}`;
         }
         return clean;
       case 'facebook':
