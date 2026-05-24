@@ -6,6 +6,7 @@ import {
   Copy, 
   Check, 
   Sparkles, 
+  Share2,
   Code, 
   Smartphone, 
   Lock, 
@@ -101,6 +102,15 @@ const PLATFORMS: PlatformConfig[] = [
   }
 ];
 
+const PRESET_COLORS = [
+  { name: 'Slate', hex: '#0f172a' },
+  { name: 'Indigo', hex: '#4f46e5' },
+  { name: 'Rose', hex: '#e11d48' },
+  { name: 'Emerald', hex: '#10b981' },
+  { name: 'Amber', hex: '#d97706' },
+  { name: 'Sky', hex: '#0284c7' }
+];
+
 export default function App() {
   const [url, setUrl] = useState<string>('https://www.instagram.com/instagram');
   const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>('auto');
@@ -191,28 +201,32 @@ export default function App() {
         
         // Generate base QR library Canvas 
         await QRCode.toCanvas(canvas, textToEncode, {
-          width: 250,
-          margin: 1,
+          width: 600, // Higher resolution for export
+          margin: 3, // Safe quiet zone
           color: {
             dark: qrColor,
             light: bgColor
           },
-          errorCorrectionLevel: 'H'
+          errorCorrectionLevel: 'H' // High ECC for icons
         });
 
-        // Overlay brand or scan text in the middle
+        // Overlay brand icon
         if (centerIcon !== 'none') {
           const ctx = canvas.getContext('2d');
           if (ctx) {
             const size = canvas.width;
-            const boxSize = size * 0.24;
+            const boxSize = size * 0.22; // Slightly smaller to avoid data overlap
             const x = (size - boxSize) / 2;
             const y = (size - boxSize) / 2;
 
-            // Draw white/background colored container block over center
+            // Container block with soft shadow effect
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.shadowBlur = 10;
             ctx.fillStyle = bgColor;
+            
+            // Rounded rectangle
+            const r = boxSize * 0.2;
             ctx.beginPath();
-            const r = 8;
             ctx.moveTo(x + r, y);
             ctx.lineTo(x + boxSize - r, y);
             ctx.arcTo(x + boxSize, y, x + boxSize, y + r, r);
@@ -224,29 +238,28 @@ export default function App() {
             ctx.arcTo(x, y, x + r, y, r);
             ctx.closePath();
             ctx.fill();
+            
+            ctx.shadowBlur = 0; // Reset shadow
 
             if (centerIcon === 'scan') {
               ctx.fillStyle = qrColor;
-              ctx.font = 'bold 9px sans-serif';
+              ctx.font = `bold ${boxSize * 0.3}px sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText('SCAN', size / 2, size / 2);
             } else if (centerIcon === 'brand') {
-              const platform = smartResult.icon.toLowerCase();
               let iconColor = smartResult.brandColor;
               if (iconColor === '#FFFFFF' || iconColor === '#FFFC00') {
                 iconColor = '#000000';
               }
               
-              // Draw custom decorative brand circle or badge
               ctx.fillStyle = iconColor;
               ctx.beginPath();
-              ctx.arc(size / 2, size / 2, boxSize * 0.35, 0, 2 * Math.PI);
+              ctx.arc(size / 2, size / 2, boxSize * 0.38, 0, 2 * Math.PI);
               ctx.fill();
 
-              // Central star indicator icon symbol
               ctx.fillStyle = '#ffffff';
-              ctx.font = 'bold 12px sans-serif';
+              ctx.font = `bold ${boxSize * 0.45}px sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText('⚡', size / 2, size / 2);
@@ -261,13 +274,94 @@ export default function App() {
     drawQR();
   }, [smartResult.smartUrl, qrColor, bgColor, centerIcon, smartResult.icon, smartResult.brandColor]);
 
-  // Handle PNG downloads
-  const handleDownloadPNG = () => {
+  // Sync canvas to image previews for frame display
+  useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
+    const updateImages = () => {
+      try {
+        const dataUrl = canvas.toDataURL('image/png');
+        ['qr-export-img', 'qr-export-img-badge', 'qr-export-img-neon', 'qr-export-img-none'].forEach(id => {
+          const img = document.getElementById(id) as HTMLImageElement;
+          if (img) img.src = dataUrl;
+        });
+      } catch (e) {
+        console.error("Failed to sync canvas to images:", e);
+      }
+    };
+    
+    // Small delay to ensure canvas is fully painted
+    const timer = setTimeout(updateImages, 100);
+    return () => clearTimeout(timer);
+  }, [smartResult.smartUrl, qrColor, bgColor, centerIcon, qrFrameStyle, customFrameText]);
+
+  // Handle Composition downloads (Composites frame + QR + text)
+  const handleDownloadPNG = async () => {
+    if (!canvasRef.current) return;
+    
+    // If no frame, just download the QR
+    if (qrFrameStyle === 'none') {
+      const link = document.createElement('a');
+      link.download = `smart_qr_${selectedPlatform}.png`;
+      link.href = canvasRef.current.toDataURL('image/png');
+      link.click();
+      playSuccessSound();
+      return;
+    }
+
+    // Advanced Composite Rendering
+    const masterCanvas = document.createElement('canvas');
+    const mctx = masterCanvas.getContext('2d');
+    if (!mctx) return;
+
+    // Set high-res dimensions (Poster style 1200x1600 or square 1200x1200)
+    masterCanvas.width = 1200;
+    masterCanvas.height = 1500;
+
+    // Draw Background based on style
+    if (qrFrameStyle === 'simple') {
+      mctx.fillStyle = '#ffffff';
+      mctx.fillRect(0, 0, 1200, 1500);
+      mctx.strokeStyle = '#0f172a';
+      mctx.lineWidth = 20;
+      mctx.strokeRect(40, 40, 1120, 1420);
+      
+      mctx.fillStyle = '#0f172a';
+      mctx.font = 'bold 60px Cairo, sans-serif';
+      mctx.textAlign = 'center';
+      mctx.fillText('DIRECT APP ACCESS 📱', 600, 150);
+    } else if (qrFrameStyle === 'badge') {
+      mctx.fillStyle = '#020617';
+      mctx.fillRect(0, 0, 1200, 1500);
+      const gradient = mctx.createLinearGradient(0, 0, 1200, 0);
+      gradient.addColorStop(0, '#ec4899');
+      gradient.addColorStop(0.5, '#6366f1');
+      gradient.addColorStop(1, '#10b981');
+      mctx.fillStyle = gradient;
+      mctx.fillRect(0, 0, 1200, 30);
+    } else {
+      mctx.fillStyle = '#4f46e5';
+      mctx.fillRect(0, 0, 1200, 1500);
+    }
+
+    // Draw QR from generated canvas
+    const margin = 200;
+    const qrSize = 800;
+    mctx.drawImage(canvasRef.current, (1200 - qrSize) / 2, 300, qrSize, qrSize);
+
+    // Draw Text Labels
+    mctx.fillStyle = qrFrameStyle === 'badge' || qrFrameStyle === 'neon' ? '#ffffff' : '#000000';
+    mctx.font = 'bold 80px Cairo, sans-serif';
+    mctx.textAlign = 'center';
+    mctx.fillText(customFrameText, 600, 1300);
+    
+    mctx.font = '500 40px Cairo, sans-serif';
+    mctx.fillStyle = qrFrameStyle === 'badge' ? '#64748b' : 'rgba(0,0,0,0.4)';
+    mctx.fillText('GENERATED BY SMART LINK PRO', 600, 1420);
+
     const link = document.createElement('a');
-    link.download = `smart_qr_${selectedPlatform}_link.png`;
-    link.href = canvas.toDataURL('image/png');
+    link.download = `smart_viral_qr_${selectedPlatform}.png`;
+    link.href = masterCanvas.toDataURL('image/png');
     link.click();
     playSuccessSound();
   };
@@ -278,6 +372,24 @@ export default function App() {
     setCopiedLink(true);
     playSuccessSound();
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'الرابط الذكي - Smart Link QR',
+          text: `افتح هذا الرابط الذكي للانتقال مباشرة للتطبيق: ${smartResult.smartUrl}`,
+          url: smartResult.smartUrl,
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          handleCopyLink();
+        }
+      }
+    } else {
+      handleCopyLink();
+    }
   };
 
   // Copy full html code
@@ -321,88 +433,94 @@ export default function App() {
     setContactMessage('');
   };
 
-  // Preset Colors that pop
-  const PRESET_COLORS = [
-    { name: 'شبحي داكن', hex: '#0f172a' },
-    { name: 'بنفسجي ملكي', hex: '#4f46e5' },
-    { name: 'أزرق فيسبوك', hex: '#1877F2' },
-    { name: 'وردي إنستا', hex: '#E1306C' },
-    { name: 'أحمر يوتيوب', hex: '#FF0000' },
-    { name: 'أخضر واتساب', hex: '#25D366' }
-  ];
-
   return (
-    <div className="min-h-screen bg-slate-50/50 flex flex-col antialiased font-sans pb-12" dir="rtl">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col antialiased font-sans pb-12 overflow-x-hidden" dir="rtl">
       
-      {/* Dynamic Decorative Lights */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-indigo-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-1/3 left-1/4 w-[350px] h-[350px] bg-pink-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
+      {/* Hyper-Viral Global Ambient FX */}
+      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse" />
+      <div className="absolute bottom-[-5%] left-[-5%] w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+      <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-pink-600/5 rounded-full blur-[80px] pointer-events-none -z-10" />
 
-      {/* Modern Glassmorphic Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100/80 shadow-sm transition-all">
-        <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
-              <QrCode className="w-5.5 h-5.5" strokeWidth={2.5} />
-            </div>
+      {/* Futuristic Viral Header */}
+      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 shadow-2xl">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <motion.div 
+              whileHover={{ rotate: 90 }}
+              className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+            >
+              <QrCode className="w-6 h-6" strokeWidth={2.5} />
+            </motion.div>
             <div>
-              <h1 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+              <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
                 الرابط الذكي
-                <span className="text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100/70 px-2 py-0.5 rounded-md">برو</span>
+                <span className="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full uppercase font-black tracking-widest">Viral Pro</span>
               </h1>
-              <p className="text-[10px] text-indigo-600/90 font-bold tracking-wider">توليد كود الـ QR الذكي بذكاء واحترافية</p>
+              <p className="text-[10px] text-slate-400 font-bold tracking-widest opacity-80 uppercase">The Ultra Deep-Link Engine</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              مستضاف محلياً وآمن 100%
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+                {activeUsers.toLocaleString()} LIVE NOW
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+      <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-10 relative">
         
-        {/* Hero Title Intro */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
+        {/* Viral Headline Section */}
+        <div className="text-center max-w-4xl mx-auto mb-14">
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-black bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mb-6 uppercase tracking-widest"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>وداعاً لطلب تسجيل الدخول المزعج! افتح التطبيق مباشرة</span>
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>انفجار في التفاعل: فتح التطبيقات مباشرة بنسبة 100%</span>
           </motion.div>
 
           <motion.h2 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tighter"
           >
-            مولد كود الـ QR <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">الذكي المتكامل</span>
+            حوّل متابعيك لـ <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">فيروس انتشار</span> حقيقي
           </motion.h2>
-          <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            حول روابط حساباتك بمنصات التواصل إلى أكواد استجابة ذكية (Smart Deep Links) تطلق التطبيق الرسمي على الهواتف فور المسح لزيادة الاشتراكات بنسبة تفوق 400% مجاناً للأبد.
+          <p className="text-slate-400 text-sm sm:text-lg leading-relaxed max-w-2xl mx-auto font-medium">
+            تخطى الحواجز التقنية واجبر تطبيقات إنستغرام، تيك توك، ويوتيوب على الفتح الفوري. كود QR ذكي، سريع، وآمن صُنع ليتصدر المشهد.
           </p>
         </div>
 
-        {/* Bento Grid Layout Main Containers */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Hyper-Bento Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Bento Card: Interactive Configuration */}
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 space-y-6">
+          {/* Card: Control Panel (Viral Input) */}
+          <div className="lg:col-span-7 bg-white/5 backdrop-blur-3xl rounded-[40px] border border-white/10 p-8 shadow-2xl space-y-10 lg:sticky lg:top-28">
             
-            {/* Header selection info */}
-            <div>
-              <label className="block text-sm font-bold text-slate-800 mb-3.5 flex items-center gap-2">
-                <span className="text-indigo-600 bg-indigo-50 w-6 h-6 rounded-lg flex items-center justify-center text-xs">1</span>
-                <span>اختر منصة شبكة التواصل الاجتماعي لتوليد رابطها:</span>
-              </label>
-              
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+            {/* Steps Visual Indicator */}
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-black text-white flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-indigo-500 text-white flex items-center justify-center text-sm shadow-[0_0_15px_rgba(79,70,229,0.5)]">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                محرك التجهيز الذكي
+              </h3>
+              <div className="text-[10px] font-black text-slate-500 tracking-widest uppercase">CONFIGURATION MODE / v2.4</div>
+            </div>
+            
+            {/* Platform Grid */}
+            <div className="space-y-4">
+              <label className="block text-xs font-black text-slate-400 uppercase tracking-widest px-2">1. اختيار محطة البث:</label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {PLATFORMS.map((platform) => {
                   const isActive = selectedPlatform === platform.id;
                   return (
@@ -412,620 +530,329 @@ export default function App() {
                         setSelectedPlatform(platform.id);
                         if (platform.id !== 'youtube') setAutoSub(false);
                       }}
-                      className={`py-3 px-2 rounded-2xl text-xs font-extrabold border transition-all flex flex-col items-center justify-center gap-2 cursor-pointer duration-200
+                      className={`relative group overflow-hidden py-4 px-3 rounded-[24px] text-[11px] font-black border transition-all flex flex-col items-center justify-center gap-3 cursor-pointer duration-300
                         ${isActive 
-                          ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100/50 scale-[1.02]' 
-                          : 'bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-600 hover:bg-slate-100/80 hover:-translate-y-0.5'
+                          ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] scale-[1.05]' 
+                          : 'bg-white/5 border-white/5 hover:border-white/20 text-slate-400 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                      {platform.logoSvg ? (
-                        <div dangerouslySetInnerHTML={{ __html: platform.logoSvg }} className={isActive ? 'text-white' : ''} />
-                      ) : (
-                        <Sparkles className="w-4 h-4" />
-                      )}
-                      <span>{platform.name}</span>
+                      {isActive && <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent pointer-events-none" />}
+                      <div className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}>
+                        {platform.logoSvg ? (
+                          <div dangerouslySetInnerHTML={{ __html: platform.logoSvg }} className="w-6 h-6" />
+                        ) : (
+                          <Sparkles className="w-6 h-6" />
+                        )}
+                      </div>
+                      <span className="tracking-wide">{platform.name}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Input address box */}
-            <div className="space-y-2.5">
-              <label className="block text-sm font-bold text-slate-800 flex items-center gap-2">
-                <span className="text-indigo-600 bg-indigo-50 w-6 h-6 rounded-lg flex items-center justify-center text-xs">2</span>
-                <span>ضع الرابط أو المعرف الشخصي لحسابك:</span>
-              </label>
-              <div className="relative rounded-2xl shadow-sm">
-                <div className="absolute inset-y-0 right-0 pr-4.5 flex items-center pointer-events-none text-slate-400">
-                  <LinkIcon className="w-5 h-5 text-indigo-500" />
+            {/* URL/Handle Input */}
+            <div className="space-y-4">
+              <label className="block text-xs font-black text-slate-400 uppercase tracking-widest px-2">2. مصدر التدفق (الرابط أو المعرف):</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 right-0 pr-6 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-400">
+                  <LinkIcon className="w-6 h-6" />
                 </div>
                 <input
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  className="block w-full pr-12 pl-4 py-4 rounded-2xl border border-slate-200 outline-none text-right font-semibold text-slate-800 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-sm sm:text-base bg-slate-50/50"
+                  className="block w-full pr-16 pl-6 py-6 rounded-[28px] bg-white/5 border border-white/10 outline-none text-right font-black text-white placeholder:text-slate-600 focus:border-indigo-500 focus:ring-[12px] focus:ring-indigo-500/10 transition-all text-sm sm:text-lg"
                   placeholder={PLATFORMS.find(p => p.id === selectedPlatform)?.placeholder || ''}
                 />
               </div>
             </div>
 
-            {/* Platform Option Fields: AutoSub for YouTube */}
-            {selectedPlatform === 'youtube' && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="bg-red-50/50 border border-red-100 rounded-2xl p-4 space-y-2"
-              >
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={autoSub} 
-                    onChange={(e) => setAutoSub(e.target.checked)}
-                    className="w-4.5 h-4.5 text-red-600 border-red-300 rounded focus:ring-red-500 cursor-pointer" 
-                  />
-                  <div>
-                    <span className="text-xs font-bold text-red-900 block">طلب الاشتراك التلقائي في القناة بقوة 💥</span>
-                    <span className="text-[10px] text-red-600 leading-normal block">سيقوم بإرغام المتصفح المفتوح لعرض نافذة تاكيد الاشتراك بالقناة تلقائياً بمجرد فتح كود الـ QR.</span>
-                  </div>
-                </label>
-              </motion.div>
-            )}
-
-            {/* Customization Details Block */}
-            <div className="border-t border-slate-100 pt-6 space-y-6">
-              <h3 className="text-sm font-extrabold text-slate-850 flex items-center gap-2">
-                <span className="p-1 px-1.5 bg-indigo-50 rounded-lg text-indigo-600 text-xs">🎨</span>
-                تخصيص جماليات وتصميم كود الاستجابة (QR):
-              </h3>
-
-              {/* Grid selectors */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Accent Dark color picker */}
-                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 hover:border-slate-300 transition-colors">
-                  <span className="text-xs font-bold text-slate-500 block mb-2.5">اللون الأساسي للنقاط والرموز</span>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="color" 
-                      value={qrColor} 
-                      onChange={(e) => setQrColor(e.target.value)} 
-                      className="w-12 h-12 rounded-xl cursor-pointer border border-slate-200 p-1 bg-white" 
-                    />
-                    <div className="text-right">
-                      <span className="text-xs font-semibold text-slate-700 block">اختر لون الـ QR</span>
-                      <span className="text-[10px] text-slate-400 font-mono block select-all">{qrColor}</span>
+            {/* Special Viral Options (Toggles) */}
+            <AnimatePresence>
+              {selectedPlatform === 'youtube' && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="p-6 rounded-[30px] bg-red-500/10 border border-red-500/20"
+                >
+                  <label className="flex items-center gap-4 cursor-pointer">
+                    <div className="relative">
+                      <input 
+                        type="checkbox" 
+                        checked={autoSub} 
+                        onChange={(e) => setAutoSub(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-12 h-6 bg-slate-800 rounded-full peer peer-checked:bg-red-600 transition-colors"></div>
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
                     </div>
-                  </div>
+                    <div>
+                      <span className="text-xs font-black text-red-100 block mb-1">تجميد الانتباه: نافذة الاشتراك الإجباري 🚀</span>
+                      <span className="text-[10px] text-red-300/80 font-bold leading-normal block">سيتم فرض ظهور نافذة الاشتراك المنبثقة فوراً عند فتح القناة لزيادة المتابعين بجنون.</span>
+                    </div>
+                  </label>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-                  {/* Preset Colors */}
-                  <div className="mt-3.5 flex flex-wrap gap-1.5">
+            {/* Dynamic Customization Tabs (Viral Visuals) */}
+            <div className="space-y-6 pt-6 border-t border-white/5">
+              <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] px-2 flex items-center justify-between">
+                <span>3. البصمة البصرية المتقدمة</span>
+                <Sparkles className="w-4 h-4 animate-spin-slow" />
+              </h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Foreground color */}
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">لون النقاط الذرية</span>
+                  <div className="grid grid-cols-6 gap-2">
                     {PRESET_COLORS.map(p => (
                       <button
                         key={p.hex}
                         onClick={() => setQrColor(p.hex)}
-                        title={p.name}
-                        className="w-6 h-6 rounded-full border border-white cursor-pointer hover:scale-110 active:scale-95 transition-all shadow-sm"
+                        className={`w-full aspect-square rounded-xl border-2 transition-all hover:scale-110 active:scale-95 cursor-pointer shadow-lg
+                          ${qrColor === p.hex ? 'border-white scale-110' : 'border-transparent opacity-80'}
+                        `}
                         style={{ backgroundColor: p.hex }}
                       />
                     ))}
-                  </div>
-                </div>
-
-                {/* Light BG Color Picker */}
-                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 hover:border-slate-300 transition-colors">
-                  <span className="text-xs font-bold text-slate-500 block mb-2.5">لون خلفية كود الـ QR</span>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="color" 
-                      value={bgColor} 
-                      onChange={(e) => setBgColor(e.target.value)} 
-                      className="w-12 h-12 rounded-xl cursor-pointer border border-slate-200 p-1 bg-white" 
-                    />
-                    <div className="text-right">
-                      <span className="text-xs font-semibold text-slate-700 block">لون الخلفية</span>
-                      <span className="text-[10px] text-slate-400 font-mono block select-all">{bgColor}</span>
+                    <div className="relative col-span-2">
+                       <input 
+                        type="color" 
+                        value={qrColor} 
+                        onChange={(e) => setQrColor(e.target.value)} 
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="w-full h-full rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black pointer-events-none">
+                        CUSTOM
+                      </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="mt-4">
-                    <button 
-                      onClick={() => setBgColor('#ffffff')}
-                      className="px-3 py-1.5 rounded-xl text-[10px] font-bold border border-slate-200 hover:bg-slate-100 flex items-center justify-center bg-white cursor-pointer transition-colors"
-                    >
-                      إعادة لـ الأبيض الافتراضي
-                    </button>
+                {/* Background color */}
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">لون المجال المحيط</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => setBgColor('#ffffff')} className={`flex-1 py-3 rounded-xl text-[10px] font-black border transition-all ${bgColor === '#ffffff' ? 'bg-white text-black border-white' : 'bg-white/5 text-white border-white/10'}`}>WHITE SOLID</button>
+                    <button onClick={() => setBgColor('#000000')} className={`flex-1 py-3 rounded-xl text-[10px] font-black border transition-all ${bgColor === '#000000' ? 'bg-white text-black border-white' : 'bg-white/5 text-white border-white/10'}`}>PURE BLACK</button>
                   </div>
                 </div>
               </div>
-
-              {/* Logo setup configurations */}
-              <div className="space-y-2.5 pt-4 border-t border-slate-100">
-                <span className="text-xs font-bold text-slate-600 block flex items-center gap-1.5">
-                  <span className="text-indigo-500">🌟</span> إضافة أيقونة في جوهر الـ QR:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setCenterIcon('none')}
-                    className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer
-                      ${centerIcon === 'none' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    بلا شعار مدمج
-                  </button>
-                  <button
-                    onClick={() => setCenterIcon('brand')}
-                    className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer
-                      ${centerIcon === 'brand' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    أيقونة ذكية تلقائياً
-                  </button>
-                  <button
-                    onClick={() => setCenterIcon('scan')}
-                    className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer
-                      ${centerIcon === 'scan' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    SCAN 📱
-                  </button>
-                </div>
-              </div>
-
-              {/* Poster frame options for the flyer layout */}
-              <div className="space-y-3 pt-4 border-t border-slate-100">
-                <span className="text-xs font-bold text-slate-600 block flex items-center gap-1.5">
-                  <span className="text-indigo-500">🎫</span> قالب الملصق الإعلاني الحامل للـ QR:
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <button
-                    onClick={() => setQrFrameStyle('none')}
-                    className={`px-2 py-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer
-                      ${qrFrameStyle === 'none' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    بدون إطار
-                  </button>
-                  <button
-                    onClick={() => setQrFrameStyle('simple')}
-                    className={`px-2 py-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer
-                      ${qrFrameStyle === 'simple' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    بسيط 🏷️
-                  </button>
-                  <button
-                    onClick={() => setQrFrameStyle('badge')}
-                    className={`px-2 py-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer
-                      ${qrFrameStyle === 'badge' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    لوحة طباعة 🎫
-                  </button>
-                  <button
-                    onClick={() => setQrFrameStyle('neon')}
-                    className={`px-2 py-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer
-                      ${qrFrameStyle === 'neon' 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                  >
-                    توهج نيون 🔮
-                  </button>
-                </div>
-                
-                {qrFrameStyle !== 'none' && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-1.5 pt-1.5"
-                  >
-                    <span className="text-[11px] font-semibold text-slate-400 block text-right">عنوان الملصق (يظهر تحت الـ QR):</span>
-                    <input
-                      type="text"
-                      value={customFrameText}
-                      onChange={(e) => setCustomFrameText(e.target.value)}
-                      maxLength={40}
-                      className="w-full text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-right outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
-                      placeholder="امسح للتوجيه للمنصة 🚀"
-                    />
-                  </motion.div>
-                )}
-              </div>
-
             </div>
 
           </div>
 
-          {/* Bento Card: Live Result & Actions Preview */}
-          <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-6 w-full lg:sticky lg:top-24">
+          {/* Card: Live Output (Viral Masterpiece) */}
+          <div className="lg:col-span-5 flex flex-col gap-8">
             
-            {/* View options selectors */}
-            <div className="flex bg-slate-100 p-1 rounded-2xl w-full">
-              <button
-                onClick={() => setActiveTab('preview')}
-                className={`w-1/2 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer
-                  ${activeTab === 'preview' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
-              >
-                <Smartphone className="w-4 h-4 text-indigo-500" />
-                <span>المعاينة المباشرة</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('code')}
-                className={`w-1/2 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer
-                  ${activeTab === 'code' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
-              >
-                <Code className="w-4 h-4 text-indigo-500" />
-                <span>ملف الـ HTML المستقل</span>
-              </button>
-            </div>
-
-            {/* Render Preview Frame */}
-            {activeTab === 'preview' ? (
-              <motion.div 
-                key="preview-panel"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="space-y-6 flex flex-col items-center justify-center text-center w-full"
-              >
-                {/* QR Display frame styled like a floating device block */}
-                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200/60 shadow-inner flex flex-col items-center w-full">
-                  <div className="w-full flex justify-between items-center mb-4 pb-2 border-b border-slate-200/60">
-                    <div className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span className="text-[11px] font-extrabold text-slate-400 tracking-wider">كود QR الذكي المباشر</span>
-                    </div>
-                    <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-lg block">
-                      جاهز فوراً
-                    </span>
-                  </div>
-
-                  {/* Real-time paint canvas wrapper with interactive frame styles */}
-                  <div className="w-full flex justify-center items-center py-2 h-auto">
-                    {qrFrameStyle === 'none' ? (
-                      <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-200">
-                        <canvas ref={canvasRef} className="rounded-xl w-[200px] h-[200px] max-w-full" />
-                      </div>
-                    ) : qrFrameStyle === 'simple' ? (
-                      <div className="bg-white border-2 border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col items-center max-w-[240px] w-full border-dashed">
-                        <span className="text-[9px] font-bold text-slate-400 mb-2 uppercase tracking-wide">رابط مباشر 📱</span>
-                        <canvas ref={canvasRef} className="rounded-xl w-[170px] h-[170px]" />
-                        <span className="text-[11px] font-extrabold text-slate-800 mt-3 text-center leading-normal px-1">{customFrameText}</span>
-                      </div>
-                    ) : qrFrameStyle === 'badge' ? (
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col items-center max-w-[240px] w-full text-white relative overflow-hidden">
-                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-pink-500 via-indigo-500 to-emerald-500"></div>
-                        <span className="text-[9px] font-black tracking-widest text-indigo-400 mb-3 block">الرابط الذكي للمتابعين</span>
-                        <div className="p-2 bg-white rounded-xl">
-                          <canvas ref={canvasRef} className="rounded-lg w-[160px] h-[160px]" />
-                        </div>
-                        <span className="text-[11px] font-black text-white mt-3 text-center leading-normal tracking-wide px-1">
-                          {customFrameText}
-                        </span>
-                        <div className="mt-2.5 px-2 py-0.5 rounded bg-slate-800 text-[8px] text-slate-400 font-mono tracking-wider">
-                          100% SECURE REDIRECT
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-slate-950 rounded-2xl p-5 flex flex-col items-center max-w-[240px] w-full relative group shadow-2xl overflow-hidden border border-indigo-500/30" style={{ boxShadow: `0 0 20px ${qrColor}15` }}>
-                        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-pink-500 to-cyan-500 opacity-20 blur-lg group-hover:opacity-35 transition-opacity duration-500"></div>
-                        <span className="text-[9px] font-bold text-cyan-400 mb-3 tracking-widest relative">NEON LIVE CODE</span>
-                        <div className="p-2 bg-slate-900 rounded-xl relative border border-white/5 shadow-inner">
-                          <canvas ref={canvasRef} className="rounded-md w-[150px] h-[150px]" />
-                        </div>
-                        <span className="text-[11px] font-bold text-white mt-3 text-center leading-normal relative tracking-wide px-1" style={{ textShadow: `0 0 8px ${qrColor}80` }}>
-                          {customFrameText}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Smart Redirect URL Explanation Badge */}
-                  <div className="w-full mt-4 bg-white border border-slate-200/80 p-4 rounded-2xl text-right space-y-3">
-                    <span className="text-[11px] font-black text-indigo-600 uppercase tracking-widest block flex items-center gap-1">
-                      <Info className="w-3.5 h-3.5" />
-                      الرابط الذكي المفعل:
-                    </span>
-                    <p className="text-xs text-slate-500 leading-relaxed font-semibold">
-                      {smartResult.explanation}
-                    </p>
-                    
-                    {/* Raw parsed output copy block wrapper */}
-                    <div className="pt-2.5 border-t border-slate-100 flex flex-col gap-1.5">
-                      <span className="text-[10px] text-slate-400 block font-bold">الرابط المكتوب في الكود:</span>
-                      <div className="bg-slate-50 px-3 py-2 rounded-xl border border-slate-200/80 font-mono text-[10px] text-indigo-700 break-all select-all text-left max-h-16 overflow-y-auto" dir="ltr">
-                        {smartResult.smartUrl || '...'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sub Action controls buttons png/copy */}
-                <div className="grid grid-cols-2 gap-3 w-full">
-                  <button
-                    onClick={handleDownloadPNG}
-                    disabled={!url}
-                    className="flex items-center justify-center gap-2 text-white bg-slate-900 hover:bg-slate-800 disabled:bg-slate-100 disabled:text-slate-300 font-bold py-3.5 px-4 rounded-xl text-xs transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>تحميل صورة PNG</span>
-                  </button>
-                  <button
-                    onClick={handleCopyLink}
-                    disabled={!url}
-                    className="flex items-center justify-center gap-2 text-slate-700 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 disabled:text-slate-300 font-bold py-3.5 px-4 rounded-xl text-xs transition-all cursor-pointer hover:-translate-y-0.5"
-                  >
-                    {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                    <span>{copiedLink ? 'تم نسخ الرابط!' : 'نسخ الرابط الذكي'}</span>
-                  </button>
-                </div>
-
-              </motion.div>
-            ) : (
-              // HTML Single file distribution panel code viewer
-              <motion.div 
-                key="code-panel"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="space-y-4 text-right w-full"
-              >
-                <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 text-left font-mono text-xs flex flex-col h-[320px] shadow-lg relative">
-                  <div className="flex justify-between items-center text-slate-500 pb-2.5 border-b border-slate-800/80 mb-2 font-sans">
-                    <span className="text-[10px] font-bold">ملف index.html كامل متكامل وجاهز للنسخ</span>
-                    <span className="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md">حجم صغير جداً</span>
-                  </div>
-                  
-                  {/* Code body screen */}
-                  <textarea 
-                    readOnly
-                    value={generateSingleFileHTML("الرابط الذكي")}
-                    className="bg-transparent text-indigo-200 outline-none w-full h-full font-mono text-[10px] resize-none overflow-y-auto cursor-text text-left select-all pb-8"
-                  />
-
-                  {/* Sparkle decorative */}
-                  <div className="absolute bottom-3 right-3 font-sans text-[10px] bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 px-2 py-1 rounded-lg">
-                    <span>100% يعمل بدون سيرفر (Client-side)</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2 w-full pt-1">
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={handleCopyCode}
-                      className="flex items-center justify-center gap-1.5 text-white bg-indigo-600 hover:bg-indigo-700 font-bold py-3 px-3 rounded-xl text-xs transition-all cursor-pointer select-none"
-                    >
-                      {copiedCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedCode ? 'تم نسخ المضمون!' : 'نسخ الكود بالكامل'}</span>
-                    </button>
-                    <button
-                      onClick={handleDownloadHTMLFile}
-                      className="flex items-center justify-center gap-1.5 text-slate-700 bg-slate-100 hover:bg-slate-200 font-bold py-3 px-3 rounded-xl text-xs transition-all cursor-pointer select-none"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>تنزيل الملف (index.html)</span>
-                    </button>
-                  </div>
-                  <p className="text-[10px] text-slate-400 leading-normal font-semibold text-center italic mt-1">
-                    يمكنك تحميل هذا الملف لفتحه مباشرة على حاسوبك الشخصي أو رفعه على استضافة مجانية فوراً.
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
-          </div>
-
-        </div>
-
-        {/* Dynamic Multi-user Bento Dashboards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          
-          {/* Card 1: نبض واحصائيات المنصة الحي */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm flex flex-col justify-between gap-5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors pointer-events-none"></div>
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-extrabold text-slate-800 text-sm flex items-center gap-2">
-                  <span className="flex h-2.5 w-2.5 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                  </span>
-                  مؤشرات تدفق التفاعل الحي ونشاط المنصة
-                </h4>
-                <span className="text-[10px] font-bold text-slate-400 tracking-wider font-mono">LIVE STATUS</span>
-              </div>
+            {/* QR Preview Wrapper */}
+            <div className="bg-white rounded-[45px] p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex flex-col items-center gap-10 relative overflow-hidden group">
               
-              <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-100">
-                <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
-                  <span className="text-[10px] font-semibold text-slate-400 block mb-1">المنشئون النشطون حالياً</span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl sm:text-2xl font-black text-slate-800 font-mono tracking-tight">{activeUsers.toLocaleString('ar-EG')}</span>
-                    <span className="text-[10px] font-bold text-emerald-500">متصل الآن 📡</span>
-                  </div>
-                </div>
+              {/* Internal Social Proof Banner */}
+              <div className="w-full flex justify-between items-center bg-slate-50 px-5 py-3 rounded-[20px] border border-slate-100/60">
+                 <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span className="text-[10px] font-black text-slate-800 tracking-widest uppercase">LIVE PREVIEW GENERATOR</span>
+                 </div>
+                 <div className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">PRO v2.0</div>
+              </div>
+
+              {/* Render Area with Framed QR */}
+              <div className="relative z-10 w-full flex justify-center py-4 bg-grid-slate-100">
+                {/* Hidden Master Canvas for generation */}
+                <canvas ref={canvasRef} className="hidden" width={600} height={600} />
                 
-                <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
-                  <span className="text-[10px] font-semibold text-slate-400 block mb-1">الأكواد المولدة اليوم</span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl sm:text-2xl font-black text-slate-800 font-mono tracking-tight">{generatedToday.toLocaleString('ar-EG')}</span>
-                    <span className="text-[10px] font-bold text-indigo-500">كود ناجح 🚀</span>
+                <div className="transition-all duration-700 hover:scale-[1.03] cursor-help">
+                  {qrFrameStyle === 'none' ? (
+                    <div className="p-4 bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
+                      <img id="qr-export-img-none" alt="QR" className="rounded-xl w-[250px] sm:w-[300px] h-auto" />
+                    </div>
+                  ) : qrFrameStyle === 'simple' ? (
+                    <div className="bg-white border-[3px] border-slate-900 rounded-[35px] p-6 shadow-2xl flex flex-col items-center max-w-[320px] w-full border-dashed ring-[15px] ring-slate-100/50">
+                      <div className="flex items-center gap-2 mb-4 bg-slate-900 text-white px-4 py-1.5 rounded-full">
+                        <span className="text-[11px] font-black tracking-widest uppercase">SCAN TO OPEN APP</span>
+                        <Smartphone className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="p-2 bg-slate-50 rounded-2xl border border-slate-100 ring-4 ring-white shadow-inner">
+                        <img id="qr-export-img" alt="QR" className="w-[200px] h-[200px]" />
+                      </div>
+                      <span className="text-sm font-black text-slate-900 mt-6 text-center leading-tight tracking-tight px-2">{customFrameText}</span>
+                    </div>
+                  ) : qrFrameStyle === 'badge' ? (
+                    <div className="bg-slate-950 border border-white/10 rounded-[40px] p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col items-center max-w-[340px] w-full text-white relative overflow-hidden">
+                      <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-pink-500 via-indigo-500 to-cyan-500"></div>
+                      <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 shadow-xl">
+                        <Zap className="w-6 h-6 text-indigo-400 fill-current" />
+                      </div>
+                      <div className="p-3 bg-white rounded-[32px] ring-8 ring-white/5 shadow-2xl mb-6">
+                        <img src="" id="qr-export-img-badge" alt="QR" className="w-[180px] h-[180px] rounded-[18px]" />
+                      </div>
+                      <span className="text-[15px] font-black text-white text-center leading-snug tracking-tight px-2">
+                        {customFrameText}
+                      </span>
+                      <div className="mt-6 flex flex-col items-center gap-2">
+                        <div className="h-[1px] w-12 bg-white/20"></div>
+                        <span className="text-[9px] font-black text-slate-500 tracking-[0.3em] uppercase">Deep-Link Secure</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-indigo-600 rounded-[40px] p-8 flex flex-col items-center max-w-[340px] w-full relative group shadow-[0_0_50px_rgba(79,70,229,0.4)] overflow-hidden border border-white/20">
+                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2),transparent)] opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                       <Sparkles className="w-10 h-10 text-white mb-6 animate-pulse" />
+                       <div className="p-4 bg-white rounded-[35px] shadow-2xl transform transition-transform group-hover:rotate-3 duration-500">
+                          <img src="" id="qr-export-img-neon" alt="QR" className="w-[180px] h-[180px]" />
+                       </div>
+                       <span className="text-[16px] font-black text-white mt-8 text-center leading-tight tracking-tight relative drop-shadow-lg">
+                         {customFrameText}
+                       </span>
+                       <div className="mt-8 px-5 py-2 bg-black/20 rounded-2xl border border-white/10 backdrop-blur-md">
+                          <span className="text-[9px] font-black text-white/90 tracking-widest uppercase">Premium Redirect v2.4</span>
+                       </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Redirection Strategy Panel */}
+              <div className="w-full bg-slate-50/80 border border-slate-200/50 p-6 rounded-[32px] space-y-4">
+                <div className="flex items-center justify-between">
+                   <span className="text-[11px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
+                      استراتيجية التوجيه الذكي:
+                   </span>
+                   <div className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded uppercase">OPTIMIZED</div>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed font-bold text-center sm:text-right">
+                  {smartResult.explanation}
+                </p>
+                <div className="pt-4 border-t border-slate-200/50 space-y-2">
+                  <span className="text-[10px] text-slate-400 font-black tracking-widest uppercase block">ENCODED PAYLOAD:</span>
+                  <div className="bg-white px-4 py-3 rounded-2xl border border-slate-200/80 font-mono text-[10px] text-slate-800 break-all select-all text-left shadow-inner max-h-20 overflow-y-auto" dir="ltr">
+                    {smartResult.smartUrl || '...'}
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 select-none animate-pulse"></span>
-              <p className="text-[11px] font-bold text-slate-600 truncate text-right w-full leading-normal" dir="rtl">
-                {activeFeed}
-              </p>
-            </div>
-          </div>
-
-          {/* Card 2: محطة الترويج والانتشار الفيروسي */}
-          <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 md:p-8 shadow-xl flex flex-col justify-between gap-5 text-white relative overflow-hidden group">
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-extrabold text-indigo-300 text-sm flex items-center gap-1.5">
-                  <span>🚀</span> محطة الانتشار والترويج الفيروسي المتكاملة
-                </h4>
-                <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 text-[9px] font-bold rounded">
-                  تحدي النمو السريع
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 leading-normal font-semibold mb-4">
-                ساعد منشئي المحتوى والمسوقين الآخرين في التغلب على مشكلة تسجيل الدخول في السوشيال ميديا! شارك الأداة لتعم الفائدة والدعم:
-              </p>
-
-              {/* Share box message copy helper */}
-              <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between gap-3 mb-1">
-                <p className="text-[10px] text-slate-400 font-semibold truncate text-right w-full pl-2">
-                  يا رفاق! إذا كنتم تبحثون عن طريقة لفتح انستجرام وتيك توك مباشرة بالتطبيقات... جربوا "الرابط الذكي"
-                </p>
+              {/* Action Buttons Hub */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                 <button
-                  onClick={handleCopyCampaignText}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-[10px] font-bold rounded-xl flex items-center gap-1 cursor-pointer transition-all shrink-0"
+                  onClick={handleDownloadPNG}
+                  disabled={!url}
+                  className="group relative overflow-hidden bg-slate-950 text-white font-black py-5 px-6 rounded-[28px] text-sm transition-all shadow-xl hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {copiedCampaign ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
-                  <span>{copiedCampaign ? 'تم النسخ!' : 'نسخ الرسالة'}</span>
+                  <div className="absolute inset-0 bg-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-right duration-500" />
+                  <div className="relative flex items-center justify-center gap-3">
+                    <Download className="w-5 h-5" />
+                    <span>تحميل بجودة 4K (PNG)</span>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={handleShare}
+                  disabled={!url}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 px-6 rounded-[28px] text-sm transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 shadow-lg shadow-indigo-200"
+                >
+                  <Share2 className="w-5 h-5" />
+                  <span>مشاركة الرابط الذكي</span>
+                </button>
+
+                <button
+                  onClick={handleCopyLink}
+                  disabled={!url}
+                  className="sm:col-span-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-black py-5 px-6 rounded-[28px] text-sm transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                  {copiedLink ? <Check className="w-5 h-5 text-emerald-500" /> : <Copy className="w-5 h-5" />}
+                  <span>{copiedLink ? 'تم نسخ الرابط!' : 'نسخ الرابط الذكي للمرسل'}</span>
                 </button>
               </div>
+
             </div>
 
-            {/* Quick Share Buttons */}
-            <div className="grid grid-cols-3 gap-2.5">
-              <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent('أوصي بهذه الأداة المميزة والمجانية لتوليد كود وبطاقات QR ذكية تفتح تطبيقات السوشيال ميديا مباشرة للمتابعين وتزيد من تفاعلهم! جربوها هنا:\nhttps://ais-pre-ig5eae2idoo3bwx2kdc7sw-460298271198.europe-west2.run.app')}`}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2.5 bg-emerald-600/90 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-bold transition-all hover:-translate-y-0.5"
-              >
-                <span>واتساب 💬</span>
-              </a>
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('أفضل أداة مجانية بالكامل لتوليد كود الـ QR الذكي بـ "روابط عميقة" تفتح تطبيقات السوشيال ميديا مباشرة وتزيد اشتراكاتك! 📱🚀\nhttps://ais-pre-ig5eae2idoo3bwx2kdc7sw-460298271198.europe-west2.run.app')}`}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2.5 bg-sky-600/90 hover:bg-sky-600 text-white rounded-xl text-[10px] font-bold transition-all hover:-translate-y-0.5"
-              >
-                <span>تويتر 🐦</span>
-              </a>
-              <a
-                href={`https://t.me/share/url?url=https://ais-pre-ig5eae2idoo3bwx2kdc7sw-460298271198.europe-west2.run.app&text=${encodeURIComponent('أداة الرابط الذكي لتوليد كود الـ QR تفتح تطبيقات السوشيال ميديا مباشرة للمتابعين!')}`}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2.5 bg-cyan-600/90 hover:bg-cyan-600 text-white rounded-xl text-[10px] font-bold transition-all hover:-translate-y-0.5"
-              >
-                <span>تليجرام ✈️</span>
-              </a>
+            {/* Viral Bento Mini-Stats (Live Energy) */}
+            <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[40px] p-8 text-white shadow-2xl relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+               <div className="relative z-10 space-y-6">
+                  <div className="flex items-center justify-between">
+                     <h4 className="text-base font-black flex items-center gap-2">
+                        <span className="p-1 px-1.5 bg-white/20 rounded-lg text-xs leading-none">+99</span>
+                        نشاط المستخدمين الحالي
+                     </h4>
+                     <TrendingUp className="w-5 h-5 opacity-50" />
+                  </div>
+                  <div className="gap-6 flex flex-col">
+                     <div className="space-y-1">
+                        <span className="text-[10px] font-black text-white/60 tracking-widest uppercase">الانتشار اليومي</span>
+                        <div className="text-3xl font-black tabular-nums">{generatedToday.toLocaleString()} <span className="text-sm font-bold text-white/50">LINK GENERATED</span></div>
+                     </div>
+                     <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-white w-2/3 shadow-[0_0_10px_white]"></div>
+                     </div>
+                     <div className="flex items-center gap-3 bg-white/10 p-3 rounded-2xl border border-white/5">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                        <p className="text-[11px] font-black truncate leading-none pt-0.5">{activeFeed}</p>
+                     </div>
+                  </div>
+               </div>
             </div>
+
           </div>
 
         </div>
-
-        {/* Benefits Cards Section */}
-        <section className="mt-16 border-t border-slate-200/80 pt-12">
-          <h3 className="text-xl sm:text-2xl font-black text-slate-900 text-center mb-10">
-            لماذا يعتبر "الرابط الذكي" الخيار الأفضل لتوليد كود الـ QR؟
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 space-y-3"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">⚡</div>
-              <h4 className="font-extrabold text-slate-800 text-sm">روابط عميقة (Deep Links)</h4>
-              <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                يجبر الهاتف الذكي على تشغيل إنستغرام، يوتيوب، أو تيك توك وتجاوز المتصفحات الداخلية لإتمام التفاعل فوراً.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 space-y-3"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">♾️</div>
-              <h4 className="font-extrabold text-slate-800 text-sm">مجاني وبدون حدود مطلقاً</h4>
-              <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                يعمل الكود من متصفح الزائر دون الحاجة لتسجيل أو سيرفر خلفي لتخزين الروابط أو بيعها.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 space-y-3"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">🛡️</div>
-              <h4 className="font-extrabold text-slate-800 text-sm">أمن وخصوصية مطلقة</h4>
-              <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                لا نراقب روابطك أو معلوماتك، المعالجة وتشفير كود الـ QR تتم محلياً في جهاز الهاتف الخاص بالمستخدم.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 space-y-3"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg">✨</div>
-              <h4 className="font-extrabold text-slate-800 text-sm">شعار دمج دقيق وبارز</h4>
-              <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                يضيف تلقائياً شعار التطبيق ومسح في جوهر الكود لتزداد ثقة الزوار ومستخدمي الهواتف بالمسح.
-              </p>
-            </motion.div>
-
-          </div>
-        </section>
 
       </main>
 
-      {/* Footer Section */}
-      <footer className="mt-20 border-t border-slate-100/90 py-8 bg-white/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-slate-400 text-xs gap-4">
-          <div className="flex items-center gap-2">
-            <QrCode className="w-4 h-4 text-indigo-500" />
-            <span className="font-bold text-slate-600">الرابط الذكي</span>
-            <span>- رفيقك الاحترافي في التفاعل</span>
-          </div>
+      {/* Futuristic Legal Dock/Footer */}
+      <footer className="mt-20 border-t border-white/5 pt-12 pb-8 bg-slate-950">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg">
+                  <QrCode className="w-5 h-5" />
+                </div>
+                <span className="text-xl font-black">الرابط الذكي</span>
+              </div>
+              <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                الأداة الأكثر تطوراً عالمياً لربط منصات التواصل الاجتماعي بالتطبيقات الرسمية فوراً. تجربة مسح خالية من التعقيد، شفافة، وآمنة تماماً.
+              </p>
+            </div>
+            
+            <div className="space-y-6">
+              <h5 className="text-xs font-black text-slate-500 uppercase tracking-widest">القوانين والضوابط</h5>
+              <div className="flex flex-col gap-3">
+                <button onClick={() => setActiveModal('privacy')} className="text-sm font-bold text-slate-400 hover:text-indigo-400 transition-colors text-right">سياسة الخصوصية والأمان الفائق</button>
+                <button onClick={() => setActiveModal('terms')} className="text-sm font-bold text-slate-400 hover:text-indigo-400 transition-colors text-right">شروط الاستخدام المشروعة</button>
+                <button onClick={() => setActiveModal('contact')} className="text-sm font-bold text-slate-400 hover:text-indigo-400 transition-colors text-right">فريق الدعم الفني والمقترحات</button>
+              </div>
+            </div>
 
-          {/* Clean, interactive policy and contact links */}
-          <div className="flex flex-wrap items-center gap-4 font-semibold text-slate-500 my-1 sm:my-0">
-            <button 
-              onClick={() => setActiveModal('privacy')}
-              className="hover:text-indigo-600 cursor-pointer transition-colors"
-            >
-              سياسة الخصوصية
-            </button>
-            <span className="text-slate-200">|</span>
-            <button 
-              onClick={() => setActiveModal('terms')}
-              className="hover:text-indigo-600 cursor-pointer transition-colors"
-            >
-              شروط الخدمة
-            </button>
-            <span className="text-slate-200">|</span>
-            <button 
-              onClick={() => setActiveModal('contact')}
-              className="hover:text-indigo-600 cursor-pointer transition-colors flex items-center gap-1"
-            >
-              <Mail className="w-3.5 h-3.5" />
-              اتصل بنا
-            </button>
+            <div className="space-y-6">
+              <h5 className="text-xs font-black text-slate-500 uppercase tracking-widest">الوضع التشغيلي</h5>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                <div className="flex items-center justify-between text-[10px] font-black">
+                  <span className="text-slate-500 uppercase">SERVER STATE</span>
+                  <span className="text-emerald-400">● RUNNING LOCAL</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] font-black">
+                  <span className="text-slate-500 uppercase">DATA PRIVACY</span>
+                  <span className="text-indigo-400">ENCRYPTED AT EDGE</span>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <p>© 2026. يعمل بالكامل في متصفحك (Client-side) وبسرعة قصوى مجاناً 100%.</p>
+          
+          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] font-black text-slate-600 tracking-widest uppercase">
+            <p>© 2026 SMART LINK PRO ENGINE. ALL RIGHTS RESERVED.</p>
+            <div className="flex items-center gap-6">
+              <button className="hover:text-white transition-colors">GITHUB SOURCE</button>
+              <button className="hover:text-white transition-colors">DOCUMENTATION</button>
+              <button className="hover:text-white transition-colors">SYSTEM STATUS</button>
+            </div>
+          </div>
         </div>
       </footer>
 

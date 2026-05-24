@@ -106,8 +106,8 @@ export function parseToSmartLink(inputUrl: string, platform: PlatformType, autoS
         // Skip default page paths
         if (!['p', 'reel', 'stories', 'explore', 'direct', 'accounts', 'developer', 'about'].includes(username)) {
           return {
-            smartUrl: `instagram://user?username=${username}`,
-            explanation: `تم اكتشاف حساب إنستغرام! تم تحويل الرابط إلى "instagram://user?username=${username}" لفتح الحساب مباشرة داخل تطبيق إنستغرام لتمكين الزوار من المتابعة والإعجاب فوراً.`,
+            smartUrl: `https://www.instagram.com/_u/${username}`,
+            explanation: `تم استخدام رابط "Universal Link" الذكي (_u/). هذا الرابط هو الأدق عالمياً لإجبار تطبيق إنستغرام على الفتح مباشرة بدلاً من المتصفح، مما يضمن تجربة سلسة للمسح والمتابعة الفورية.`,
             icon: 'Instagram',
             brandColor: '#E1306C'
           };
@@ -119,7 +119,7 @@ export function parseToSmartLink(inputUrl: string, platform: PlatformType, autoS
           const postId = postMatch[1];
           return {
             smartUrl: `instagram://media?id=${postId}`,
-            explanation: `تم اكتشاف منشور/ريل إنستغرام! تم تحويله إلى بروتوكول "instagram://media?id=${postId}" لفتحه فوراً بالتطبيق الرسمي بدلاً من المتصفح الداخلي البطيء.`,
+            explanation: `تم استخدام بروتوكول الوسائط المباشر (Media Intent). سيقوم بفتح المنشور/الريل داخل التطبيق فوراً لزيادة التفاعل والإعجابات دون عوائق تسجيل الدخول.`,
             icon: 'Instagram',
             brandColor: '#E1306C'
           };
@@ -127,7 +127,7 @@ export function parseToSmartLink(inputUrl: string, platform: PlatformType, autoS
       }
       return {
         smartUrl: url,
-        explanation: 'تم التعرف على رابط إنستغرام وسيتم ترميزه ببروتوكولات التوجيه الذكي للتطبيق الرسمي.',
+        explanation: 'رابط إنستغرام تم تحليله. سيحاول الكود فتح التطبيق الرسمي عبر روابط الويب الذكية المُحسنة.',
         icon: 'Instagram',
         brandColor: '#E1306C'
       };
