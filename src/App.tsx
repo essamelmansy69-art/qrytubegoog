@@ -26,17 +26,17 @@ type Platform = 'general' | 'instagram' | 'youtube' | 'facebook' | 'tiktok';
 const TRANSLATIONS = {
   ar: {
     title: 'Qrytube',
-    headline: 'ضاعف متابعينك بـ',
-    headlineColor: 'كود QR سحري! 🚀',
-    trustBadge: '🌟 يثق بنا أكثر من 50,000 صانع محتوى حول العالم',
-    subHeadline: 'تجاوز المتصفح الداخلي المزعج. افتح تطبيقات المنصات الرسمية (يوتيوب، إنستغرام، تيك توك) مباشرة في هواتف متابعينك بضغطة واحدة!',
+    headline: 'افتح روابط اليوتيوب',
+    headlineColor: 'داخل التطبيق مباشرة 🎬',
+    trustBadge: '🌟 يثق بنا أكثر من 50,000 يوتيوبر وصانع محتوى حول العالم',
+    subHeadline: 'ضاعف مشاهداتك واشتراكاتك. امنع فتح الفيديوهات في متصفح فيسبوك وإنستجرام الداخلي المزعج واكسب جمهورك فوراً!',
     
     labelPlatform: 'اختر المنصة المستهدفة',
-    labelUrl: 'رابط حسابك أو قناتك',
+    labelUrl: 'رابط فيديو أو قناة اليوتيوب',
     labelLogo: 'تخصيص الهوية والشعار',
     labelQrColor: 'لون كود QR',
     
-    placeholderUrl: '👉 ضع رابط حسابك أو قناتك هنا',
+    placeholderUrl: 'مثال: https://youtube.com/watch?v=... أو https://youtu.be/...',
     
     general: 'رابط عام',
     instagram: 'Instagram',
@@ -54,51 +54,51 @@ const TRANSLATIONS = {
     copy: 'نسخ الرابط الذكي',
     copied: 'تم النسخ!',
     
-    errorInvalidUrl: '⚠️ الرجاء إدخال رابط صحيح أو اسم مستخدم صالح للمنصة المختارة!',
+    errorInvalidUrl: '⚠️ الرجاء إدخال رابط يوتيوب أو اسم مستخدم صالح!',
     
-    seoTitle: 'أفضل أداة لإنشاء روابط ذكية (Deep Links) وكود QR - Qrytube',
-    seoDescription: 'حوّل روابط انستجرام، يوتيوب، وتيك توك إلى روابط ذكية تفتح التطبيق مباشرة. تخطى المتصفح الداخلي وضاعف معدل التحويل والمتابعات بنقرة واحدة.',
+    seoTitle: 'يوتيوب إلى تطبيق | مولد روابط ذكية وكود QR لزيادة المشاهدات',
+    seoDescription: 'حوّل روابط يوتيوب وسوشيال ميديا إلى روابط ذكية تفتح التطبيق الرسمي مباشرة وتخطى المتصفح الداخلي لزيادة تفاعلك واشتراكاتك بضغطة واحدة.',
     
-    faqTitle: 'الأسئلة الشائعة حول الروابط الذكية وأكواد الـ QR 💬',
+    faqTitle: 'الأسئلة الشائعة لصناع المحتوى واليوتيوبرز 💬',
     faqItems: [
       {
-        q: 'ما هو الرابط الذكي للسوشيال ميديا (Social Media Deep Link)؟',
-        a: 'الرابط الذكي أو الرابط العميق (Deep Link) هو تقنية ذكية تقوم بتحويل الرابط العادي ليقوم بتوجيه الزائر مباشرة لفتح التطبيق الرسمي المثبت على هاتفه (مثل تطبيق يوتيوب أو إنستجرام)، بدلاً من فتح نسخة الويب البطيئة داخل المتصفح الداخلي الافتراضي والتي تتطلب تسجيل الدخول.'
+        q: 'لماذا تفتح روابط اليوتيوب داخل متصفح فيسبوك وإنستجرام الداخلي؟',
+        a: 'تحاول تطبيقات التواصل مثل فيسبوك وإنستجرام حظر المستخدمين داخل بيئتها عبر فتح الروابط في متصفح داخلي مدمج. هذا يمنع الزوار من التفاعل، الإعجاب، أو الاشتراك لأنهم غير مسجلين الدخول هناك. يقوم نظام Qrytube بحل هذه العقبة ونقلهم إلى تطبيق يوتيوب الرسمي فوراً.'
       },
       {
-        q: 'لماذا يفتح المتصفح الافتراضي في بعض الأحيان بدلاً من التطبيق؟',
-        a: 'بعض التطبيقات مثل فيسبوك أو ماسنجر تمتلك متصفحات داخلية مغلقة تحاول إبقاء المستخدم داخل تطبيقها. يقوم نظام Qrytube باستخدام بروتوكولات توجيه مطورة وتلقائية لتخطي هذا القيد وإجبار نظام الهاتف على فتح التطبيق الرسمي مباشرة.'
+        q: 'كيف يمكن تغيير وإجبار رابط يوتيوب لفتح تطبيق يوتيوب الرسمي مباشرة؟',
+        a: 'باستخدام مولد الروابط الذكية Qrytube، نقوم تلقائياً بتحويل صيغة الرابط التقليدية إلى صيغة Deep Link بروتوكولية مخصصة للأجهزة الذكية (iOS/Android). عند نقر الزائر أو مسح كود الـ QR، يتم إجبار الهاتف لفتح تطبيق يوتيوب الرسمي فوراً لضمان أفضل تجربة مع المشتركين.'
+      },
+      {
+        q: 'هل كود الـ QR والروابط الذكية تساعد فعلاً في زيادة المشتركين؟',
+        a: 'نعم، وبشكل ضخم جداً! تشير الإحصاءات إلى أن توجيه الجمهور للتطبيق الرسمي مباشرة بنقرة واحدة بدلاً من المتصفح الداخلي يرفع نسبة المشاهدات والتفاعل بمقدار 300% إلى 400%، حيث يسير الزائر في مسار طبيعي وسهل للضغط على زر الإعجاب والاشتراك بفضل حسابه المفتوح مسبقاً.'
       },
       {
         q: 'هل هذا المولد مجاني بالكامل وهل معلوماتي آمنة؟',
         a: 'نعم، الأداة مجانية 100% وبدون أي حدود للتوليد! كما أن العملية تتم بالكامل محلياً داخل متصفحك (Client-Side)، فلا يتم تخزين روابطك أو بياناتك في أي خادم خارجي لتوفير أقصى درجات الأمان والخصوصية المطلقة.'
-      },
-      {
-        q: 'كيف يمكنني الاستفادة القصوى من كود الـ QR بعد توليده؟',
-        a: 'ننصح برفع شعار علامتك التجارية أو أيقونة المنصة المختارة في منتصف كود الـ QR لتعزيز الثقة بنسبة 80%، ثم يمكنك طباعة الكود على المنتجات، العلب، الكروت الشخصية، أو مشاركته رقمياً لمسح سريع ونمو هائل للمتابعين.'
       }
     ],
 
     features: [
       {
         title: 'فتح التطبيق مباشرة',
-        desc: 'تقنية الروابط العميقة (Deep Linking) تضمن فتح الرابط داخل التطبيق الرسمي فوراً.'
+        desc: 'تقنية الروابط العميقة (Deep Linking) تضمن فتح الرابط داخل تطبيق يوتيوب الرسمي فوراً.'
       },
       {
         title: 'زيادة التفاعل 3X',
-        desc: 'تجنب مطالبة المستخدمين بتسجيل الدخول في المتصفح الداخلي، مما يرفع نسبة المتابعات.'
+        desc: 'تجنب مطالبة المستخدمين بتسجيل الدخول في المتصفح الداخلي، مما يرفع نسبة المشاهدات والاشتراكات بشكل ملحوظ.'
       },
       {
-        title: 'كود QR احترافي',
-        desc: 'أنشئ أكواد QR متوافقة مع الطباعة الرقمية مع إمكانية إضافة شعار علامتك التجارية.'
+        title: 'كود QR لليوتيوبرز',
+        desc: 'أنشئ أكواد QR متوافقة مع الطباعة الرقمية ومصممة خصيصاً لجذب جمهورك لزر الاشتراك بلمسة واحدة.'
       }
     ],
     
     howItWorksTitle: 'كيف يعمل Qrytube؟',
     steps: [
-      'اختر المنصة (انستجرام، يوتيوب، تيك توك، إلخ).',
-      'ضع الرابط الأصلي في الصندوق المخصص.',
-      'احصل فوراً على الرابط الذكي أو كود QR الجاهز للاستخدام.'
+      'اختر منصة يوتيوب كخيار افتراضي أو أي منصة اجتماعية بديلة.',
+      'ضع رابط الفيديو أو القناة في الصندوق المخصص.',
+      'احصل فوراً على الرابط الذكي أو كود QR الجاهز للاستخدام وماركته للجمهور.'
     ],
 
     footer: 'نظام Qrytube لكود الـ QR السحري وعمليات التوجيه للأجهزة الذكية 2026',
@@ -117,17 +117,17 @@ const TRANSLATIONS = {
   },
   en: {
     title: 'Qrytube',
-    headline: 'Double your followers with',
-    headlineColor: 'Magic QR Code! 🚀',
-    trustBadge: '🌟 Trusted by over 50,000 content creators worldwide',
-    subHeadline: 'Skip the annoying internal browser. Open official platform apps (YouTube, Instagram, TikTok) directly on your followers\' phones with one click!',
+    headline: 'Open YouTube Links',
+    headlineColor: 'Directly Inside the App 🎬',
+    trustBadge: '🌟 Trusted by over 50,000 YouTube Creators worldwide',
+    subHeadline: 'Boost your views and subscribers. Bypass the annoying in-app browsers and redirect mobile users directly to the official YouTube app natively!',
     
     labelPlatform: 'Select Target Platform',
-    labelUrl: 'Your Account or Channel Link',
+    labelUrl: 'YouTube Video or Channel Link',
     labelLogo: 'Brand Identity & Logo Customization',
     labelQrColor: 'QR Code Color',
     
-    placeholderUrl: '👉 Paste your account or channel link here',
+    placeholderUrl: 'e.g., https://youtube.com/watch?v=... or https://youtu.be/...',
     
     general: 'General Link',
     instagram: 'Instagram',
@@ -145,51 +145,51 @@ const TRANSLATIONS = {
     copy: 'Copy Smart Link',
     copied: 'Copied!',
     
-    errorInvalidUrl: '⚠️ Please enter a valid URL or username for the selected platform!',
+    errorInvalidUrl: '⚠️ Please enter a valid YouTube link or social username!',
     
-    seoTitle: 'Qrytube - The Premier Deep Link & Smart QR Code Engine',
-    seoDescription: 'Convert Instagram, YouTube, and TikTok links into smart deep links that launch apps directly. Skip internal browsers and triple your conversion rate with one click.',
+    seoTitle: 'TubeJump | Smart Deep Link & QR Code Generator for YouTube',
+    seoDescription: 'Convert standard social media profiles and YouTube video links into deep routing entities that open native mobile apps instantly and boost conversions.',
     
-    faqTitle: 'Frequently Asked Questions (FAQ) 💬',
+    faqTitle: 'Frequently Asked Questions for Creators & YouTubers 💬',
     faqItems: [
       {
-        q: 'What is a Social Media Deep Link?',
-        a: 'A Deep Link is a smart routing technology that redirects users directly to your official profile inside native mobile apps (like YouTube, Instagram, TikTok) rather than rendering a slow, unauthenticated web browser view.'
+        q: 'Why do YouTube links open in Facebook\'s internal browser?',
+        a: 'In-app browsers (like Facebook\'s or Instagram\'s) restrict users inside their ecosystem. This blocks guests from liking, commenting, or subscribing because they are not signed in on those custom browser views. Qrytube bypasses this by routing links directly to the official native YouTube app.'
       },
       {
-        q: 'Why does the default browser open instead of the official app sometimes?',
-        a: 'Certain in-app browsers associated with apps like Facebook or Messenger attempt to confine users. Qrytube integrates sophisticated, auto-updated routing protocols to bypass these blocks and open your official app natively.'
+        q: 'How can I force a YouTube link to open in the official app?',
+        a: 'Through Qrytube\'s Deep Linking conversion protocol, standard URLs are transformed into device-level custom URL schemas. When clicked or scanned, the smartphone OS is forced to execute a deep route that directly launches the official mobile YouTube application.'
       },
       {
-        q: 'Is this QR code generator safe and free?',
-        a: 'Yes, absolutely! Our generator is 100% free with unlimited downloads. All validation, rendering, and processing take place strictly client-side inside your browser (local environment), meaning your confidential links are never saved or harvested on secondary servers.'
+        q: 'Will this help increase my YouTube subscription rate?',
+        a: 'Absolutely! Stats prove that converting cold traffic directly into signed-in native app views boosts conversions, subscriptions, and actions by 300% to 400%. Since users are already logged in to their primary accounts inside their native apps, subscribing is a seamless single click.'
       },
       {
-        q: 'How can I maximize my custom QR code conversion?',
-        a: 'We strongly suggest placing your brand logo or the official platform icon in the middle of your QR code to boost scanning rates by up to 80%. Then, print it on product boxes, flyers, business cards, or publish it digitally.'
+        q: 'Can I embed my personal channel logo inside the generated QR code?',
+        a: 'Yes! Our custom uploader shrinks, sanitizes, and places your dynamic logo directly at the center of the QR code. This increases scanning credibility and maintains consistent brand aesthetics without obstructing readability.'
       }
     ],
 
     features: [
       {
         title: 'Instant App Launch',
-        desc: 'Our Deep Linking technology ensures links open directly within official mobile apps.'
+        desc: 'Our Deep Linking technology ensures links open directly within the official native YouTube application.'
       },
       {
         title: '3X Growth Rate',
-        desc: 'Don’t let login screens kill your engagement. Open profiles directly where users are logged in.'
+        desc: 'Don’t let login screens kill your subscription rates. Move users instantly to where they are already logged in.'
       },
       {
         title: 'Pro QR Generation',
-        desc: 'Customizable, print-ready QR codes with your identity and brand logo embedded.'
+        desc: 'Customizable, print-ready QR codes with your channel logo embedded to build unmatched credibility.'
       }
     ],
     
     howItWorksTitle: 'How Qrytube Works',
     steps: [
-      'Choose your platform (Instagram, YouTube, TikTok, etc.).',
-      'Paste your original channel URL or username inside the input box.',
-      'Instantly get your smart deep link and print-ready QR code.'
+      'Choose YouTube as your default platform, or select any of our supported alternative platforms.',
+      'Paste your video URL, channel link, or username into the targeted input field.',
+      'Instantly download your custom deep link and a print-ready modern QR code.'
     ],
 
     footer: 'Qrytube Deep Routing & Smart QR-Code System 2026',
@@ -218,16 +218,36 @@ const PLATFORMS = [
 
 function HomeContent({ lang }: { lang: Language }) {
   const [url, setUrl] = useState('');
-  const [platform, setPlatform] = useState<Platform>('general');
+  const [platform, setPlatform] = useState<Platform>('youtube');
   const [logo, setLogo] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [qrColor, setQrColor] = useState('#000000');
+  const [qrColor, setQrColor] = useState('#FF0000');
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = TRANSLATIONS[lang];
+
+  const getPlaceholder = useCallback(() => {
+    if (lang === 'ar') {
+      switch (platform) {
+        case 'youtube': return 'مثال: https://youtube.com/watch?v=... أو https://youtu.be/...';
+        case 'instagram': return 'مثال: https://instagram.com/profile أو اسم الحساب';
+        case 'facebook': return 'مثال: https://facebook.com/page';
+        case 'tiktok': return 'مثال: https://tiktok.com/@username';
+        default: return '👉 ضع رابط حسابك أو قناتك هنا';
+      }
+    } else {
+      switch (platform) {
+        case 'youtube': return 'e.g., https://youtube.com/watch?v=... or https://youtu.be/...';
+        case 'instagram': return 'e.g., https://instagram.com/profile or username';
+        case 'facebook': return 'e.g., https://facebook.com/page';
+        case 'tiktok': return 'e.g., https://tiktok.com/@username';
+        default: return '👉 Paste your account or channel link here';
+      }
+    }
+  }, [lang, platform]);
 
   const validateInput = useCallback((val: string, plat: Platform): boolean => {
     const clean = val.trim();
@@ -520,37 +540,93 @@ function HomeContent({ lang }: { lang: Language }) {
 
       <div className="grid md:grid-cols-2 gap-8 items-start">
         {/* Core Generator Card */}
-        <div className="bg-white border border-slate-100 shadow-custom-card p-6 md:p-8 rounded-[2rem] space-y-8 relative overflow-hidden">
+        <div className="bg-white border border-slate-100 shadow-custom-card p-6 md:p-8 rounded-[2rem] space-y-8 relative overflow-hidden transition-all duration-500">
           {/* Accent decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 blur-3xl rounded-full" />
+          <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl rounded-full transition-all duration-700 ${
+            platform === 'youtube' ? 'bg-red-500/10' :
+            platform === 'instagram' ? 'bg-rose-500/10' :
+            platform === 'facebook' ? 'bg-blue-500/10' :
+            platform === 'tiktok' ? 'bg-slate-500/10' :
+            'bg-indigo-500/10'
+          }`} />
           
           <div className="space-y-8 relative z-10">
-            {/* Target Platform */}
-            <div className="space-y-3">
+            {/* Target Platform with YouTube Emphasis */}
+            <div className="space-y-4">
               <span className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
                 {t.labelPlatform}
               </span>
-              <div className="grid grid-cols-5 gap-2.5">
-                {PLATFORMS.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => setPlatform(p.id as Platform)}
-                    aria-label={t[p.id as keyof typeof t] || p.id}
-                    className={`flex items-center justify-center p-3.5 rounded-2xl border transition-all duration-300 relative group/btn ${
-                      platform === p.id 
-                        ? p.activeClass 
-                        : `bg-slate-50/70 border-slate-100 ${p.brandColor} ${p.hoverClass}`
-                    }`}
-                  >
-                    <p.icon className={`w-5 h-5 transition-transform duration-300 ${platform === p.id ? 'scale-110' : 'group-hover/btn:scale-110'}`} />
-                    {platform === p.id && (
-                      <motion.div 
-                        layoutId="active-pill"
-                        className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-current"
-                      />
-                    )}
-                  </button>
-                ))}
+              
+              <div className="space-y-4.5">
+                {/* Primary YouTube platform spotlight card */}
+                <div>
+                  <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+                    {lang === 'ar' ? 'المنصة الأساسية والنشطة للمشاهدات' : 'Primary High-Conversion Platform'}
+                  </span>
+                  
+                  {PLATFORMS.filter(p => p.id === 'youtube').map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        setPlatform('youtube');
+                        setQrColor('#FF0000');
+                      }}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 relative group/btn ${
+                        platform === 'youtube'
+                          ? 'bg-red-50/70 border-red-300 text-red-600 shadow-sm ring-2 ring-red-500/10'
+                          : 'bg-slate-50/70 border-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-50/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <p.icon className={`w-5.5 h-5.5 text-red-600 transition-transform ${platform === 'youtube' ? 'scale-110 animate-pulse' : 'group-hover/btn:scale-110'}`} />
+                        <span className="font-extrabold text-sm tracking-wide font-sans">YouTube Creator Focus</span>
+                      </div>
+                      <span className="text-[9px] font-black bg-red-600 text-white px-2.5 py-1 rounded-lg tracking-wider">
+                        {lang === 'ar' ? 'الأفضل للمشاهدات والاشتراك' : 'BEST FOR VIEWS & SUBS'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Secondary/Alternative row */}
+                <div className="pt-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                    {lang === 'ar' ? 'أو اختر منصة تواصل بديلة' : 'Or Select Alternative Platform'}
+                  </span>
+                  <div className="grid grid-cols-4 gap-2">
+                    {PLATFORMS.filter(p => p.id !== 'youtube').map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          const pId = p.id as Platform;
+                          setPlatform(pId);
+                          if (pId === 'instagram') setQrColor('#E1306C');
+                          else if (pId === 'facebook') setQrColor('#1877F2');
+                          else if (pId === 'tiktok') setQrColor('#000000');
+                          else setQrColor('#4F46E5');
+                        }}
+                        aria-label={t[p.id as keyof typeof t] || p.id}
+                        className={`flex flex-col items-center justify-center p-2.5 rounded-xl border transition-all duration-300 relative group/btn ${
+                          platform === p.id 
+                            ? p.activeClass 
+                            : `bg-slate-50/50 border-slate-100 ${p.brandColor} ${p.hoverClass} opacity-70 hover:opacity-100`
+                        }`}
+                      >
+                        <p.icon className={`w-4.5 h-4.5 transition-transform duration-300 ${platform === p.id ? 'scale-110' : 'group-hover/btn:scale-110'}`} />
+                        <span className="text-[9px] font-bold mt-1.5 capitalize">{t[p.id as keyof typeof t] || p.id}</span>
+                        {platform === p.id && (
+                          <motion.div 
+                            layoutId="active-pill"
+                            className="absolute -bottom-1 w-1 h-1 rounded-full bg-current"
+                          />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -565,11 +641,19 @@ function HomeContent({ lang }: { lang: Language }) {
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder={t.placeholderUrl}
+                  placeholder={getPlaceholder()}
                   className={`w-full bg-slate-50/70 border rounded-2xl p-4 px-5 outline-none focus:bg-white transition-all text-sm font-medium focus:ring-4 duration-300 ${
                     error 
                       ? 'border-red-400 focus:border-red-500 focus:ring-red-100 placeholder:text-red-300 text-red-900 bg-red-50/10' 
-                      : 'border-slate-200/80 focus:border-indigo-500 focus:ring-indigo-100 placeholder:text-slate-500 text-slate-800'
+                      : platform === 'youtube'
+                        ? 'border-slate-200/80 focus:border-red-500 focus:ring-red-100 placeholder:text-slate-400 text-slate-800'
+                        : platform === 'instagram'
+                          ? 'border-slate-200/80 focus:border-rose-500 focus:ring-rose-100 placeholder:text-slate-400 text-slate-800'
+                          : platform === 'facebook'
+                            ? 'border-slate-200/80 focus:border-blue-500 focus:ring-blue-100 placeholder:text-slate-400 text-slate-800'
+                            : platform === 'tiktok'
+                              ? 'border-slate-200/80 focus:border-slate-800 focus:ring-slate-100 placeholder:text-slate-400 text-slate-800'
+                              : 'border-slate-200/80 focus:border-indigo-500 focus:ring-indigo-100 placeholder:text-slate-405 text-slate-800'
                   }`}
                   dir="ltr"
                 />
@@ -640,12 +724,22 @@ function HomeContent({ lang }: { lang: Language }) {
               </div>
             </div>
 
-            {/* Magic Purple Gradient Action Button */}
+            {/* Magic Dynamic Action Button */}
             <div className="pt-2">
               <button
                 onClick={handleDownloadPNGClick}
                 disabled={!url || !!error}
-                className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:opacity-95 text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-indigo-500/10 transition-all disabled:from-slate-150 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic relative overflow-hidden"
+                className={`w-full bg-gradient-to-r text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg transition-all disabled:from-slate-150 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic relative overflow-hidden duration-300 ${
+                  platform === 'youtube'
+                    ? 'from-red-600 via-red-500 to-rose-600 shadow-red-500/15 hover:opacity-90'
+                    : platform === 'instagram'
+                      ? 'from-pink-500 via-rose-500 to-purple-600 shadow-rose-500/15 hover:opacity-90'
+                      : platform === 'facebook'
+                        ? 'from-blue-600 via-blue-500 to-indigo-600 shadow-blue-500/15 hover:opacity-90'
+                        : platform === 'tiktok'
+                          ? 'from-zinc-900 via-zinc-800 to-slate-900 shadow-slate-900/10 hover:opacity-90 border border-white/5'
+                          : 'from-blue-500 via-indigo-500 to-purple-600 shadow-indigo-500/15 hover:opacity-95'
+                }`}
               >
                 {downloading ? (
                   <>
@@ -896,6 +990,9 @@ function MainLayout() {
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = lang === 'ar'
+      ? 'يوتيوب إلى تطبيق | مولد روابط ذكية وكود QR لزيادة المشاهدات'
+      : 'TubeJump | Smart Deep Link & QR Code Generator for YouTube';
   }, [lang]);
 
   const t = TRANSLATIONS[lang];
