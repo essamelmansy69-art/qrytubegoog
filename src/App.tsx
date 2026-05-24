@@ -1567,16 +1567,18 @@ function MainLayout() {
       </div>
 
       <header className="px-6 py-4 bg-white/85 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100 shadow-header">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Language selector pill on left */}
-          <button
-            onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-            aria-label={lang === 'ar' ? "Change language to English" : "تغيير اللغة إلى الإنجليزية"}
-            className="group/lang text-xs font-bold text-slate-700 hover:text-indigo-600 flex items-center gap-2 border border-slate-200 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-slate-50 transition-all font-sans"
-          >
-            <span>{lang === 'ar' ? 'English' : 'العربية'}</span>
-            <Globe className="w-3.5 h-3.5 text-indigo-500 group-hover/lang:rotate-180 transition-transform duration-700" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+              aria-label={lang === 'ar' ? "Change language to English" : "تغيير اللغة إلى الإنجليزية"}
+              className="group/lang text-xs font-bold text-slate-700 hover:text-indigo-600 flex items-center gap-2 border border-slate-200 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-slate-50 transition-all font-sans cursor-pointer whitespace-nowrap"
+            >
+              <span>{lang === 'ar' ? 'English' : 'العربية'}</span>
+              <Globe className="w-3.5 h-3.5 text-indigo-500 group-hover/lang:rotate-180 transition-transform duration-700" />
+            </button>
+          </div>
 
           {/* Core Brand center */}
           <Link to="/" className="flex items-center gap-1.5 group">
@@ -1603,6 +1605,7 @@ function MainLayout() {
           >
             <Routes location={location}>
               <Route path="/" element={<HomeContent lang={lang} />} />
+              <Route path="/blog" element={<BlogPage lang={lang} />} />
               <Route path="/privacy" element={<LegalPage lang={lang} type="privacy" />} />
               <Route path="/terms" element={<LegalPage lang={lang} type="terms" />} />
               <Route path="/contact" element={<ContactPage lang={lang} />} />
@@ -1649,7 +1652,9 @@ function MainLayout() {
                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">{t.footer}</span>
             </div>
 
-            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-600 tracking-wider">
+            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-600 tracking-wider flex-wrap justify-center">
+               <Link to="/" className="hover:text-indigo-600 transition-all uppercase">{lang === 'ar' ? 'الرئيسية' : 'Home'}</Link>
+               <Link to="/blog" className="hover:text-indigo-600 transition-all uppercase">{t.navArticles}</Link>
                <Link to="/privacy" className="hover:text-indigo-600 transition-all uppercase">{t.privacy}</Link>
                <Link to="/terms" className="hover:text-indigo-600 transition-all uppercase">{t.terms}</Link>
                <Link to="/contact" className="hover:text-indigo-600 transition-all uppercase">{t.contact}</Link>
