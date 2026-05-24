@@ -432,6 +432,9 @@ function HomeContent({ lang }: { lang: Language }) {
       canvasRef.current.width = size;
       canvasRef.current.height = size;
 
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
       ctx.clearRect(0, 0, size, size);
       ctx.drawImage(tempCanvas, 0, 0, size, size);
 
@@ -455,6 +458,8 @@ function HomeContent({ lang }: { lang: Language }) {
         ctx.roundRect(x - padding, y - padding, logoSize + padding * 2, logoSize + padding * 2, r);
         ctx.fill();
 
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(logoImg, x, y, logoSize, logoSize);
       }
     } catch (err) {
@@ -474,7 +479,7 @@ function HomeContent({ lang }: { lang: Language }) {
         const img = new Image();
         img.src = event.target?.result as string;
         img.onload = () => {
-          const maxDim = 50; // Constrained 50x50 px max size to avoid QR scan blocks
+          const maxDim = 512; // High-resolution limits to ensure crisp icons inside 1000px canvasses and SVGs
           const canvas = document.createElement('canvas');
           let w = img.width;
           let h = img.height;
@@ -493,11 +498,13 @@ function HomeContent({ lang }: { lang: Language }) {
           canvas.height = maxDim;
           const ctx = canvas.getContext('2d');
           if (ctx) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.clearRect(0, 0, maxDim, maxDim);
             const x = (maxDim - w) / 2;
             const y = (maxDim - h) / 2;
             ctx.drawImage(img, x, y, w, h);
-            setLogo(canvas.toDataURL('image/png'));
+            setLogo(canvas.toDataURL('image/png', 1.0));
           } else {
             setLogo(event.target?.result as string);
           }
