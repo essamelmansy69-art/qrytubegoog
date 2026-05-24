@@ -1,20 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", "Cairo", system-ui, sans-serif;
-  --font-display: "Outfit", "Cairo", sans-serif;
+  --font-sans: "Inter", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", "Cairo", sans-serif;
 }
 
 @layer base {
   body {
-    @apply transition-colors duration-700 antialiased;
-    font-feature-settings: "cv01", "cv02", "cv03", "cv04", "ss01";
+    @apply antialiased bg-[#050507] text-white selection:bg-indigo-500/30;
   }
+}
 
-  h1, h2, h3, h4 {
-    @apply tracking-tight font-bold font-display;
-  }
+.gradient-bg {
+  background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #050507 50%);
+}
+
+.shadow-3xl {
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8), 0 0 80px rgba(79, 70, 229, 0.05);
 }
 
 /* Custom Scrollbar */

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qrytubegoog.essamelmansy69.workers.dev/sitemap.xml
