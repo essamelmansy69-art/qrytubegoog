@@ -281,7 +281,7 @@ function HomeContent({ lang }: { lang: Language }) {
   const downloadSVG = async () => {
     const finalUrl = getDeepLink(url || 'https://qrytube.app', platform);
     try {
-      const svgString = await QRCode.toString(finalUrl, {
+      let svgString = await QRCode.toString(finalUrl, {
         type: 'svg',
         width: 800,
         margin: 1,
@@ -292,12 +292,28 @@ function HomeContent({ lang }: { lang: Language }) {
         errorCorrectionLevel: 'H',
       });
 
-      let finalSvg = svgString;
+      // Ensure xmlns:xlink is present on the <svg> tag for image compatibility
+      if (!svgString.includes('xmlns:xlink=')) {
+        svgString = svgString.replace('<svg ', '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ');
+      }
+
+      // Add a distinct solid white background rect to avoid transparent-to-black rendering artifacts in mobile dark-mode galleries
+      const svgTagEnd = svgString.indexOf('>') + 1;
+      const baseRect = `<rect width="100%" height="100%" fill="#ffffff" />`;
+      let finalSvg = svgString.slice(0, svgTagEnd) + baseRect + svgString.slice(svgTagEnd);
+
       if (logo) {
         const logoSize = 160;
         const logoPos = (800 - logoSize) / 2;
-        const logoImage = `<image href="${logo}" x="${logoPos}" y="${logoPos}" height="${logoSize}" width="${logoSize}" />`;
-        finalSvg = finalSvg.replace('</svg>', `${logoImage}</svg>`);
+        const padding = logoSize * 0.15;
+        const bgSize = logoSize + padding * 2;
+        const bgPos = logoPos - padding;
+        
+        // Append white rounded rect spacer block under the logo, then render the logo image with both href and xlink:href for maximum compatibility
+        const logoBg = `<rect x="${bgPos}" y="${bgPos}" width="${bgSize}" height="${bgSize}" rx="${logoSize * 0.2}" fill="#ffffff" />`;
+        const logoImage = `<image href="${logo}" xlink:href="${logo}" x="${logoPos}" y="${logoPos}" height="${logoSize}" width="${logoSize}" />`;
+        
+        finalSvg = finalSvg.replace('</svg>', `${logoBg}${logoImage}</svg>`);
       }
 
       const blob = new Blob([finalSvg], { type: 'image/svg+xml;charset=utf-8' });
@@ -306,6 +322,7 @@ function HomeContent({ lang }: { lang: Language }) {
       link.href = dlUrl;
       link.download = `qrytube-vector.svg`;
       link.click();
+      URL.revokeObjectURL(dlUrl);
     } catch (err) {
       console.error(err);
     }
