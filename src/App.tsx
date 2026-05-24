@@ -346,14 +346,15 @@ function HomeContent({ lang }: { lang: Language }) {
           <div className="space-y-8 relative z-10">
             {/* Target Platform */}
             <div className="space-y-3">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
                 {t.labelPlatform}
-              </label>
+              </span>
               <div className="grid grid-cols-5 gap-2.5">
                 {PLATFORMS.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => setPlatform(p.id as Platform)}
+                    aria-label={t[p.id as keyof typeof t] || p.id}
                     className={`flex items-center justify-center p-3.5 rounded-2xl border transition-all duration-300 relative group/btn ${
                       platform === p.id 
                         ? p.activeClass 
@@ -374,16 +375,17 @@ function HomeContent({ lang }: { lang: Language }) {
 
             {/* Source Link */}
             <div className="space-y-3">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block">
+              <label htmlFor="url-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
                 {t.labelUrl}
               </label>
               <div className="relative">
                 <input
+                  id="url-input"
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder={t.placeholderUrl}
-                  className="w-full bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 px-5 outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium text-slate-800 placeholder:text-slate-400"
+                  className="w-full bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 px-5 outline-none focus:border-indigo-500 focus:bg-white transition-all text-sm font-medium text-slate-800 placeholder:text-slate-500"
                   dir="ltr"
                 />
               </div>
@@ -393,16 +395,18 @@ function HomeContent({ lang }: { lang: Language }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Color Customizer */}
               <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block">
+                <label htmlFor="qr-color-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
                   {t.labelQrColor}
                 </label>
                 <div className="flex items-center gap-2 bg-slate-50/70 border border-slate-200/80 p-3 rounded-2xl">
-                  <span className="text-xs font-mono text-slate-500 uppercase select-all flex-grow">
+                  <span className="text-xs font-mono text-slate-600 uppercase select-all flex-grow">
                     {qrColor}
                   </span>
                   <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-300 shadow-sm cursor-pointer hover:scale-105 transition-transform">
                     <input
+                      id="qr-color-input"
                       type="color"
+                      aria-label={t.labelQrColor}
                       value={qrColor}
                       onChange={(e) => setQrColor(e.target.value)}
                       className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
@@ -414,21 +418,22 @@ function HomeContent({ lang }: { lang: Language }) {
 
               {/* Upload Logo customizer */}
               <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
                   {t.labelLogo}
-                </label>
+                </span>
                 <div className="flex gap-2">
                   <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
                   <label 
                     htmlFor="logo-upload" 
-                    className="flex-grow flex items-center justify-center gap-2 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 text-xs font-bold hover:bg-slate-100 cursor-pointer transition-all text-slate-700 hover:border-slate-300"
+                    className="flex-grow flex items-center justify-center gap-2 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 text-xs font-bold hover:bg-slate-100 cursor-pointer transition-all text-slate-800 hover:border-slate-300"
                   >
-                    <Upload className="w-4 h-4 text-slate-500" />
+                    <Upload className="w-4 h-4 text-slate-600" />
                     <span className="truncate">{t.uploadLogo}</span>
                   </label>
                   {logo && (
                     <button 
                       onClick={() => setLogo(null)} 
+                      aria-label={lang === 'ar' ? 'إزالة الشعار' : 'Remove Logo'}
                       className="p-3 border border-red-200/80 text-red-500 rounded-2xl hover:bg-red-50 hover:text-white transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -456,19 +461,19 @@ function HomeContent({ lang }: { lang: Language }) {
         {/* QR Code Interactive Preview Panel */}
         <div className="bg-white border border-slate-100 shadow-custom-card p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-between min-h-[420px]">
           <div className="w-full flex justify-between items-center mb-6">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 text-xs font-bold bg-indigo-50 text-indigo-600 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
               Live Preview
             </span>
             {platform !== 'general' && (
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                 {platform} mode
               </span>
             )}
           </div>
 
           <div className="relative group/canvas flex items-center justify-center p-6 bg-slate-50 rounded-3xl border border-slate-100 max-w-[280px] w-full aspect-square shadow-inner">
-            <canvas ref={canvasRef} className="w-full h-full max-w-[220px]" />
+            <canvas ref={canvasRef} aria-label={lang === 'ar' ? 'معاينة كود الـ QR' : 'QR Code Preview'} className="w-full h-full max-w-[220px]" />
           </div>
 
           <div className="w-full space-y-3 mt-8">
@@ -476,7 +481,8 @@ function HomeContent({ lang }: { lang: Language }) {
               <button 
                 onClick={downloadSVG}
                 disabled={!url}
-                className="bg-slate-50 border border-slate-200/80 text-slate-600 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2"
+                aria-label={t.downloadSVG}
+                className="bg-slate-50 border border-slate-200/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2 font-sans"
               >
                 <Download className="w-4 h-4" />
                 {t.downloadSVG}
@@ -484,9 +490,10 @@ function HomeContent({ lang }: { lang: Language }) {
               <button 
                 onClick={copyUrl}
                 disabled={!url}
-                className="bg-slate-50 border border-slate-200/80 text-slate-600 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2"
+                aria-label={t.copy}
+                className="bg-slate-50 border border-slate-200/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2 font-sans"
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 {t.copy}
               </button>
             </div>
@@ -499,10 +506,10 @@ function HomeContent({ lang }: { lang: Language }) {
         {t.features.map((f, i) => (
           <div key={i} className="bg-white border border-slate-100 p-6 md:p-8 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-shadow">
             <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center">
-              {i === 0 ? <Zap className="w-5 h-5 text-indigo-500" /> : i === 1 ? <Smartphone className="w-5 h-5 text-indigo-500" /> : <ShieldCheck className="w-5 h-5 text-indigo-500" />}
+              {i === 0 ? <Zap className="w-5 h-5 text-indigo-600" /> : i === 1 ? <Smartphone className="w-5 h-5 text-indigo-600" /> : <ShieldCheck className="w-5 h-5 text-indigo-600" />}
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-800">{f.title}</h3>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-medium">{f.desc}</p>
+            <h3 className="text-base sm:text-lg font-bold text-slate-950">{f.title}</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">{f.desc}</p>
           </div>
         ))}
       </div>
@@ -510,13 +517,13 @@ function HomeContent({ lang }: { lang: Language }) {
       {/* Free & Infinite Card like Screenshot */}
       <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-10 text-center shadow-custom-card">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center text-indigo-500 shadow-sm">
+          <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm">
             <span className="text-4xl font-light tracking-widest leading-none select-none">∞</span>
           </div>
-          <h3 className="text-3xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
+          <h3 className="text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
             {lang === 'ar' ? 'مجاني ولانهائي 🚀' : '100% Free & Unlimited 🚀'}
           </h3>
-          <p className="text-slate-500 text-sm max-w-xl mx-auto font-medium leading-relaxed">
+          <p className="text-slate-600 text-sm max-w-xl mx-auto font-medium leading-relaxed">
             {lang === 'ar' 
               ? 'صمّم وحمّل وشارك أكواد الابتكار الخاصة بك دون أي قيود، أو حسابات معقدة. نوفر لك الأداة المثالية لزيادة نمو حسابات السوشيال ميديا الخاصة بك.'
               : 'Design, download, and share your custom codes completely unconstrained. We empower creators to expand their digital reach.'
@@ -528,15 +535,15 @@ function HomeContent({ lang }: { lang: Language }) {
       {/* How It Works Block */}
       <div className="bg-white border border-slate-100 p-10 rounded-[2.5rem] space-y-12 text-center shadow-custom-card">
         <div className="space-y-4">
-          <h3 className="text-3xl font-black text-slate-800">{t.howItWorksTitle}</h3>
-          <p className="text-slate-500 text-sm max-w-2xl mx-auto font-medium">{t.seoDescription}</p>
+          <h3 className="text-3xl font-black text-slate-900">{t.howItWorksTitle}</h3>
+          <p className="text-slate-600 text-sm max-w-2xl mx-auto font-medium">{t.seoDescription}</p>
         </div>
         
         <div className="grid md:grid-cols-3 gap-10">
           {t.steps.map((step, i) => (
             <div key={i} className="space-y-4">
-              <div className="text-6xl font-black text-slate-100 leading-none">{i + 1}</div>
-              <p className="font-bold text-slate-700">{step}</p>
+              <div className="text-6xl font-black text-slate-200 leading-none">{i + 1}</div>
+              <p className="font-bold text-slate-800">{step}</p>
             </div>
           ))}
         </div>
@@ -570,18 +577,18 @@ function ContactPage({ lang }: { lang: Language }) {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{t.contactForm.name}</label>
-              <input required type="text" className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-4 px-6 focus:border-indigo-500 transition-all outline-none text-slate-900" />
+              <label htmlFor="contact-name" className="text-[11px] font-bold text-slate-705 uppercase tracking-wider">{t.contactForm.name}</label>
+              <input id="contact-name" required type="text" className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-4 px-6 focus:border-indigo-500 transition-all outline-none text-slate-900 font-sans" />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{t.contactForm.email}</label>
-              <input required type="email" className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-4 px-6 focus:border-indigo-500 transition-all outline-none text-slate-900" />
+              <label htmlFor="contact-email" className="text-[11px] font-bold text-slate-705 uppercase tracking-wider">{t.contactForm.email}</label>
+              <input id="contact-email" required type="email" className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-4 px-6 focus:border-indigo-500 transition-all outline-none text-slate-900 font-sans" />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{t.contactForm.message}</label>
-              <textarea required rows={5} className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-4 px-6 focus:border-indigo-500 transition-all outline-none resize-none text-slate-900" />
+              <label htmlFor="contact-message" className="text-[11px] font-bold text-slate-705 uppercase tracking-wider">{t.contactForm.message}</label>
+              <textarea id="contact-message" required rows={5} className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-4 px-6 focus:border-indigo-500 transition-all outline-none resize-none text-slate-900 font-sans" />
             </div>
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold uppercase transition-all active:scale-[0.98]">
+            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold uppercase transition-all active:scale-[0.98] font-sans">
               {t.contactForm.send}
             </button>
           </form>
@@ -611,7 +618,18 @@ function LegalPage({ lang, type }: { lang: Language, type: 'privacy' | 'terms' }
 }
 
 function MainLayout() {
-  const [lang, setLang] = useState<Language>('ar');
+  const [lang, setLang] = useState<Language>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    if (langParam === 'en' || langParam === 'ar') {
+      return langParam as Language;
+    }
+    const browserLang = navigator.language || '';
+    if (browserLang.toLowerCase().startsWith('en')) {
+      return 'en';
+    }
+    return 'ar';
+  });
   const location = useLocation();
 
   useEffect(() => {
@@ -621,6 +639,11 @@ function MainLayout() {
       setLang(langParam as Language);
     }
   }, [location.search]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [lang]);
 
   const t = TRANSLATIONS[lang];
 
@@ -636,6 +659,7 @@ function MainLayout() {
           {/* Language selector pill on left */}
           <button
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+            aria-label={lang === 'ar' ? "Change language to English" : "تغيير اللغة إلى الإنجليزية"}
             className="group/lang text-xs font-bold text-slate-700 hover:text-indigo-600 flex items-center gap-2 border border-slate-200 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-slate-50 transition-all font-sans"
           >
             <span>{lang === 'ar' ? 'English' : 'العربية'}</span>
@@ -650,7 +674,7 @@ function MainLayout() {
           </Link>
 
           {/* Icon box button on right */}
-          <Link to="/" className="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.25rem] transition-all duration-300 shadow-md flex items-center justify-center group">
+          <Link to="/" aria-label={lang === 'ar' ? 'الرئيسية' : 'Home'} className="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.25rem] transition-all duration-300 shadow-md flex items-center justify-center group">
             <QrCode className="w-5 h-5 group-hover:rotate-6 group-hover:scale-105 transition-transform" />
           </Link>
         </div>
@@ -685,29 +709,35 @@ function MainLayout() {
                  </div>
                  <span className="text-xl font-black text-slate-800 uppercase tracking-tighter">{t.title}</span>
                </div>
-               <p className="text-sm text-slate-500 max-w-sm font-medium leading-relaxed">{t.seoDescription}</p>
+               <p className="text-sm text-slate-600 max-w-sm font-medium leading-relaxed">{t.seoDescription}</p>
             </div>
 
             <div className="flex items-center gap-4">
-              {[Instagram, Facebook, Youtube, Share2].map((Icon, i) => (
-                <a 
-                  key={i} 
-                  href="#" 
-                  className="w-11 h-11 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-500 hover:text-white hover:bg-indigo-600 hover:border-indigo-500 transition-all active:scale-90"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
+              {[Instagram, Facebook, Youtube, Share2].map((Icon, i) => {
+                const iconLabels = lang === 'ar' 
+                  ? ['إنستغرام', 'فيسبوك', 'يوتيوب', 'مشاركة'] 
+                  : ['Instagram', 'Facebook', 'YouTube', 'Share'];
+                return (
+                  <a 
+                    key={i} 
+                    href="#" 
+                    aria-label={iconLabels[i]}
+                    className="w-11 h-11 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:text-white hover:bg-indigo-600 hover:border-indigo-500 transition-all active:scale-90"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-slate-150 gap-8">
             <div className="flex flex-col gap-1.5 text-center md:text-start">
                <span className="text-xs font-black text-slate-700 uppercase tracking-widest">{t.title} System</span>
-               <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t.footer}</span>
+               <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">{t.footer}</span>
             </div>
 
-            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-400 tracking-wider">
+            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-600 tracking-wider">
                <Link to="/privacy" className="hover:text-indigo-600 transition-all uppercase">{t.privacy}</Link>
                <Link to="/terms" className="hover:text-indigo-600 transition-all uppercase">{t.terms}</Link>
                <Link to="/contact" className="hover:text-indigo-600 transition-all uppercase">{t.contact}</Link>
