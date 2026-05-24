@@ -1,12 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Cairo", "Tajawal", system-ui, -apple-system, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Cairo", system-ui, sans-serif;
+  --font-display: "Outfit", "Cairo", sans-serif;
 }
 
-body {
-  font-family: var(--font-sans);
-  direction: rtl;
-  text-align: right;
+@layer base {
+  body {
+    @apply transition-colors duration-700 antialiased;
+    font-feature-settings: "cv01", "cv02", "cv03", "cv04", "ss01";
+  }
+
+  h1, h2, h3, h4 {
+    @apply tracking-tight font-bold font-display;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
 }
