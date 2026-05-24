@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import ScanStatsDashboard from './components/ScanStatsDashboard';
 import { 
   QrCode, 
   Download, 
@@ -1384,6 +1385,9 @@ function HomeContent({ lang }: { lang: Language }) {
         ))}
       </div>
 
+      {/* Dynamic D3.js scanned codes dashboard block */}
+      <ScanStatsDashboard lang={lang} />
+
       {/* Free & Infinite Card like Screenshot */}
       <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-10 text-center shadow-custom-card">
         <div className="flex flex-col items-center gap-4">
@@ -1653,12 +1657,17 @@ function MainLayout() {
             </div>
 
             <div className="flex items-center gap-8 text-[11px] font-bold text-slate-600 tracking-wider flex-wrap justify-center">
-               <Link to="/" className="hover:text-indigo-600 transition-all uppercase">{lang === 'ar' ? 'الرئيسية' : 'Home'}</Link>
                <Link to="/blog" className="hover:text-indigo-600 transition-all uppercase">{t.navArticles}</Link>
                <Link to="/privacy" className="hover:text-indigo-600 transition-all uppercase">{t.privacy}</Link>
                <Link to="/terms" className="hover:text-indigo-600 transition-all uppercase">{t.terms}</Link>
                <Link to="/contact" className="hover:text-indigo-600 transition-all uppercase">{t.contact}</Link>
             </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-slate-100 text-center">
+            <p className="text-xs font-semibold text-slate-500 font-sans tracking-wide">
+              © 2026 Qrytube. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
