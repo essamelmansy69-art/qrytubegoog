@@ -32,8 +32,8 @@ type Platform = 'general' | 'instagram' | 'youtube' | 'facebook' | 'tiktok';
 const TRANSLATIONS = {
   ar: {
     title: 'Qrytube',
-    headline: 'كود QR لليوتيوب وتوليد روابط ذكية',
-    headlineColor: 'فتح روابط اليوتيوب داخل التطبيق مباشرة لزيادة المشاهدات والاشتراكات 🚀',
+    headline: 'أداة اليوتيوبرز الأولى لتوليد أكواد QR ذكية',
+    headlineColor: 'وتخطي المتصفح الداخلي مجاناً 🚀',
     trustBadge: '🌟 يثق بنا أكثر من 50,000 يوتيوبر وصانع محتوى حول العالم',
     subHeadline: 'تجنب عقبة المتصفح الداخلي المزعج لتطبيقات فيسبوك وإنستجرام وتيك توك الذي يمنع المشاهدين من تسجيل الإعجاب بالأزرار التفاعلية أو الاشتراك بقناتك على اليوتيوب. يقوم نظام Qrytube بتوجيه الجمهور فوراً إلى التطبيق الرسمي مباشرة مع دعم فرعي لكافة منصات السوشيال ميديا الأخرى.',
     
@@ -133,8 +133,8 @@ const TRANSLATIONS = {
   },
   en: {
     title: 'Qrytube',
-    headline: 'YouTube QR Code & Smart Link Generator',
-    headlineColor: 'Open YouTube Links Directly In-App (Boost Views & Subs) 🚀',
+    headline: 'The #1 YouTube Creator QR Code Tool',
+    headlineColor: 'Bypass In-App Browsers for Free! 🚀',
     trustBadge: '🌟 Trusted by over 50,050 YouTube Creators worldwide',
     subHeadline: 'Overcome frustrating Instagram, Facebook, and TikTok back-to-app obstacles that prevent users from liking, commenting, or subscribing. Redirect viewers natively into the official YouTube app, with secondary support for all major social networks.',
     
@@ -1078,10 +1078,10 @@ function HomeContent({ lang }: { lang: Language }) {
   return (
     <div className="max-w-5xl mx-auto space-y-16">
       {/* Headline Section */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
+      <div className="text-center space-y-4 max-w-4xl mx-auto">
+        <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
           {t.headline} <br />
-          <span className="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 bg-clip-text text-transparent text-xl md:text-3xl block mt-2 leading-tight">
+          <span className="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 bg-clip-text text-transparent text-lg md:text-2xl block mt-2 leading-tight">
             {t.headlineColor}
           </span>
         </h1>
@@ -1141,7 +1141,7 @@ function HomeContent({ lang }: { lang: Language }) {
 
                 {/* Secondary/Alternative row */}
                 <div className="pt-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-sans">
                     {lang === 'ar' ? 'أو اختر منصة تواصل بديلة' : 'Or Select Alternative Platform'}
                   </span>
                   <div className="grid grid-cols-4 gap-2">
@@ -1181,7 +1181,7 @@ function HomeContent({ lang }: { lang: Language }) {
 
             {/* Source Link */}
             <div className="space-y-3">
-              <label htmlFor="url-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
+              <label htmlFor="url-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block font-sans">
                 {t.labelUrl}
               </label>
               <div className="relative">
@@ -1191,18 +1191,18 @@ function HomeContent({ lang }: { lang: Language }) {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder={getPlaceholder()}
-                  className={`w-full bg-slate-50/70 border rounded-2xl p-4 px-5 outline-none focus:bg-white transition-all text-sm font-medium focus:ring-4 duration-300 ${
+                  className={`w-full bg-slate-5/70 border rounded-2xl p-4 px-5 outline-none focus:bg-white transition-all text-sm font-semibold focus:ring-4 duration-300 ${
                     error 
                       ? 'border-red-400 focus:border-red-500 focus:ring-red-100 placeholder:text-red-300 text-red-900 bg-red-50/10' 
                       : platform === 'youtube'
-                        ? 'border-slate-200/80 focus:border-red-500 focus:ring-red-100 placeholder:text-slate-400 text-slate-800'
+                        ? 'border-slate-200/80 focus:border-red-500 focus:ring-red-100 placeholder:text-slate-404 text-slate-800'
                         : platform === 'instagram'
-                          ? 'border-slate-200/80 focus:border-rose-500 focus:ring-rose-100 placeholder:text-slate-400 text-slate-800'
+                          ? 'border-slate-200/80 focus:border-rose-500 focus:ring-rose-100 placeholder:text-slate-404 text-slate-800'
                           : platform === 'facebook'
-                            ? 'border-slate-200/80 focus:border-blue-500 focus:ring-blue-100 placeholder:text-slate-400 text-slate-800'
+                            ? 'border-slate-200/80 focus:border-blue-500 focus:ring-blue-100 placeholder:text-slate-404 text-slate-800'
                             : platform === 'tiktok'
-                              ? 'border-slate-200/80 focus:border-slate-800 focus:ring-slate-100 placeholder:text-slate-400 text-slate-800'
-                              : 'border-slate-200/80 focus:border-indigo-500 focus:ring-indigo-100 placeholder:text-slate-405 text-slate-800'
+                              ? 'border-slate-200/80 focus:border-slate-800 focus:ring-slate-100 placeholder:text-slate-404 text-slate-800'
+                              : 'border-slate-200/80 focus:border-indigo-500 focus:ring-indigo-100 placeholder:text-slate-404 text-slate-800'
                   }`}
                   dir="ltr"
                 />
@@ -1213,7 +1213,7 @@ function HomeContent({ lang }: { lang: Language }) {
                     initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
-                    className="text-xs font-bold text-red-500 mt-1 flex items-center gap-1 leading-relaxed"
+                    className="text-xs font-bold text-red-500 mt-1 flex items-center gap-1 leading-relaxed font-sans"
                   >
                     {error}
                   </motion.p>
@@ -1225,7 +1225,7 @@ function HomeContent({ lang }: { lang: Language }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Color Customizer */}
               <div className="space-y-3">
-                <label htmlFor="qr-color-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
+                <label htmlFor="qr-color-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block font-sans">
                   {t.labelQrColor}
                 </label>
                 <div className="flex items-center gap-2 bg-slate-50/70 border border-slate-200/80 p-3 rounded-2xl">
@@ -1248,20 +1248,21 @@ function HomeContent({ lang }: { lang: Language }) {
 
               {/* Upload Logo customizer */}
               <div className="space-y-3">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-widest block">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-widest block font-sans">
                   {t.labelLogo}
                 </span>
                 <div className="flex gap-2">
                   <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
                   <label 
                     htmlFor="logo-upload" 
-                    className="flex-grow flex items-center justify-center gap-2 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 text-xs font-bold hover:bg-slate-100 cursor-pointer transition-all text-slate-800 hover:border-slate-300"
+                    className="flex-grow flex items-center justify-center gap-2 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 text-xs font-bold hover:bg-slate-100 cursor-pointer transition-all text-slate-800 hover:border-slate-300 font-sans"
                   >
                     <Upload className="w-4 h-4 text-slate-600" />
                     <span className="truncate">{t.uploadLogo}</span>
                   </label>
                   {logo && (
                     <button 
+                      type="button"
                       onClick={() => setLogo(null)} 
                       aria-label={lang === 'ar' ? 'إزالة الشعار' : 'Remove Logo'}
                       className="p-3 border border-red-200/80 text-red-500 rounded-2xl hover:bg-red-50 hover:text-white transition-all"
@@ -1318,12 +1319,12 @@ function HomeContent({ lang }: { lang: Language }) {
         {/* QR Code Interactive Preview Panel */}
         <div className="bg-white border border-slate-100 shadow-custom-card p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-between min-h-[420px]">
           <div className="w-full flex justify-between items-center mb-6">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full font-sans">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
               Live Preview
             </span>
             {platform !== 'general' && (
-              <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
+              <span className="text-xs font-bold text-slate-605 uppercase tracking-widest font-sans">
                 {platform} mode
               </span>
             )}
@@ -1383,13 +1384,10 @@ function HomeContent({ lang }: { lang: Language }) {
               {i === 0 ? <Zap className="w-5 h-5 text-indigo-600" /> : i === 1 ? <Smartphone className="w-5 h-5 text-indigo-600" /> : <ShieldCheck className="w-5 h-5 text-indigo-600" />}
             </div>
             <h2 className="text-base sm:text-lg font-bold text-slate-950">{f.title}</h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">{f.desc}</p>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold">{f.desc}</p>
           </div>
         ))}
       </div>
-
-      {/* Dynamic D3.js scanned codes dashboard block */}
-      <ScanStatsDashboard lang={lang} />
 
       {/* Free & Infinite Card like Screenshot */}
       <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-10 text-center shadow-custom-card">
@@ -1426,6 +1424,9 @@ function HomeContent({ lang }: { lang: Language }) {
         </div>
       </div>
 
+      {/* Dynamic D3.js scanned codes dashboard block */}
+      <ScanStatsDashboard lang={lang} />
+
       {/* Accordion List FAQ block */}
       <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-8 shadow-custom-card">
         <h2 className="text-2xl md:text-3xl font-black text-slate-950 text-center tracking-tight">
@@ -1441,6 +1442,7 @@ function HomeContent({ lang }: { lang: Language }) {
               >
                 <button
                   type="button"
+                  aria-expanded={isOpen ? "true" : "false"}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   className="w-full text-start p-5 px-6 font-bold text-slate-800 flex items-center justify-between gap-4 select-none focus:outline-none"
                 >
