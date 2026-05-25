@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="ar">
   <head>
-    <!-- Preconnect destinations at absolute top of head for early connection negotiation -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preconnect to Google Fonts with cross-origin at absolute top of head for early negotiation -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 
@@ -14,9 +14,9 @@
     <meta name="description" content="أنشئ كود QR ذكي لروابط وقنوات اليوتيوب يتخطى عقبة المتصفح الداخلي المزعج لفيسبوك وتيك توك ويفتح التطبيق الرسمي مباشرة لزيادة اشتراكاتك ومشاهداتك تلقائياً." />
     <meta name="keywords" content="كود QR لليوتيوب, فتح روابط اليوتيوب داخل التطبيق مباشرة, روابط ذكية لزيادة المشاهدات والاشتراكات, يوتيوب الى تطبيق, روابط ذكية يوتيوب, deep link youtube, youtube qr code, bypass facebook browser" />
     
-    <!-- High-Performance Asynchronous Non-blocking google font loader with display=swap -->
+    <!-- Non-render-blocking asynchronous font loading with display=swap inside URL -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" as="style" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" media="all" font-display="swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" />
     </noscript>
@@ -26,10 +26,21 @@
       body {
         margin: 0;
         background-color: #f5f8fa;
+        color: #1e293b;
         font-family: 'Cairo', 'Inter', system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
       .gradient-bg {
         background: radial-gradient(circle at 50% 0%, rgba(219, 234, 254, 0.4) 0%, rgba(245, 248, 250, 1) 100%);
+      }
+      .shadow-header {
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+      }
+      .shadow-custom-card {
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+      }
+      .shadow-3xl {
+        box-shadow: 0 40px 100px -30px rgba(15, 23, 42, 0.15), 0 0 80px rgba(79, 70, 229, 0.03);
       }
     </style>
 
