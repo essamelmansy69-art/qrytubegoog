@@ -1382,7 +1382,7 @@ function HomeContent({ lang }: { lang: Language }) {
             <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center">
               {i === 0 ? <Zap className="w-5 h-5 text-indigo-600" /> : i === 1 ? <Smartphone className="w-5 h-5 text-indigo-600" /> : <ShieldCheck className="w-5 h-5 text-indigo-600" />}
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-950">{f.title}</h3>
+            <h2 className="text-base sm:text-lg font-bold text-slate-950">{f.title}</h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">{f.desc}</p>
           </div>
         ))}
@@ -1397,9 +1397,9 @@ function HomeContent({ lang }: { lang: Language }) {
           <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm">
             <span className="text-4xl font-light tracking-widest leading-none select-none">∞</span>
           </div>
-          <h3 className="text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
             {lang === 'ar' ? 'مجاني ولانهائي 🚀' : '100% Free & Unlimited 🚀'}
-          </h3>
+          </h2>
           <p className="text-slate-600 text-sm max-w-xl mx-auto font-medium leading-relaxed">
             {lang === 'ar' 
               ? 'صمّم وحمّل وشارك أكواد الابتكار الخاصة بك دون أي قيود، أو حسابات معقدة. نوفر لك الأداة المثالية لزيادة نمو حسابات السوشيال ميديا الخاصة بك.'
@@ -1412,7 +1412,7 @@ function HomeContent({ lang }: { lang: Language }) {
       {/* How It Works Block */}
       <div className="bg-white border border-slate-100 p-10 rounded-[2.5rem] space-y-12 text-center shadow-custom-card">
         <div className="space-y-4">
-          <h3 className="text-3xl font-black text-slate-900">{t.howItWorksTitle}</h3>
+          <h2 className="text-3xl font-black text-slate-900">{t.howItWorksTitle}</h2>
           <p className="text-slate-600 text-sm max-w-2xl mx-auto font-medium">{t.seoDescription}</p>
         </div>
         
@@ -1428,9 +1428,9 @@ function HomeContent({ lang }: { lang: Language }) {
 
       {/* Accordion List FAQ block */}
       <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-8 shadow-custom-card">
-        <h3 className="text-2xl md:text-3xl font-black text-slate-950 text-center tracking-tight">
+        <h2 className="text-2xl md:text-3xl font-black text-slate-950 text-center tracking-tight">
           {t.faqTitle}
-        </h3>
+        </h2>
         <div className="space-y-4 max-w-4xl mx-auto">
           {t.faqItems.map((item, index) => {
             const isOpen = openFaq === index;

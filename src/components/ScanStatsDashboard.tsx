@@ -71,9 +71,9 @@ export default function ScanStatsDashboard({ lang }: ScanStatsDashboardProps) {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-            <h3 className="text-xl md:text-2xl font-black text-slate-950 tracking-tight">
+            <h2 className="text-xl md:text-2xl font-black text-slate-950 tracking-tight">
               {t.title}
-            </h3>
+            </h2>
           </div>
           <p className="text-slate-600 text-xs md:text-sm max-w-3xl leading-relaxed font-semibold">
             {t.subtitle}
