@@ -321,6 +321,7 @@ export default function BlogPage({ lang }: { lang: Language }) {
                       <img 
                         src={post.thumbnail} 
                         alt={post.title} 
+                        loading="lazy"
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                       />
@@ -384,6 +385,8 @@ export default function BlogPage({ lang }: { lang: Language }) {
                 <img 
                   src={activePost?.thumbnail} 
                   alt={activePost?.title} 
+                  loading="eager"
+                  fetchpriority="high"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover opacity-75"
                 />

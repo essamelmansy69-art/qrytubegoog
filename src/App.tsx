@@ -1186,10 +1186,10 @@ function MainLayout() {
           <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-slate-150 gap-8">
             <div className="flex flex-col gap-1.5 text-center md:text-start">
                <span className="text-xs font-black text-slate-700 uppercase tracking-widest">{t.title} System</span>
-               <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">{t.footer}</span>
+               <span className="text-xs font-medium text-slate-700 uppercase tracking-wide">{t.footer}</span>
             </div>
 
-            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-600 tracking-wider flex-wrap justify-center">
+            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-700 tracking-wider flex-wrap justify-center">
                <Link to="/blog" className="hover:text-indigo-600 transition-all uppercase">{t.navArticles}</Link>
                <Link to="/privacy" className="hover:text-indigo-600 transition-all uppercase">{t.privacy}</Link>
                <Link to="/terms" className="hover:text-indigo-600 transition-all uppercase">{t.terms}</Link>
@@ -1198,7 +1198,7 @@ function MainLayout() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-slate-100 text-center">
-            <p className="text-xs font-semibold text-slate-500 font-sans tracking-wide">
+            <p className="text-xs font-semibold text-slate-600 font-sans tracking-wide">
               © 2026 Qrytube. All rights reserved.
             </p>
           </div>
