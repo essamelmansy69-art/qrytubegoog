@@ -75,14 +75,14 @@ export default function ScanStatsDashboard({ lang }: ScanStatsDashboardProps) {
               {t.title}
             </h2>
           </div>
-          <p className="text-slate-600 text-xs md:text-sm max-w-3xl leading-relaxed font-semibold">
+          <p className="text-slate-700 text-xs md:text-sm max-w-3xl leading-relaxed font-semibold">
             {t.subtitle}
           </p>
         </div>
         
         {/* Sync update indicator */}
-        <div className="flex items-center gap-1.5 self-start text-[10px] font-black text-slate-600 uppercase bg-slate-50 border border-slate-150 px-3.5 py-1.5 rounded-full select-none">
-          <RefreshCw className="w-3 h-3 text-emerald-500 animate-spin" style={{ animationDuration: '4s' }} />
+        <div className="flex items-center gap-1.5 self-start text-[10px] font-black text-slate-750 uppercase bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full select-none font-sans">
+          <RefreshCw className="w-3 h-3 text-emerald-600 animate-spin" style={{ animationDuration: '4s' }} />
           <span>{t.lastUpdated}</span>
         </div>
       </div>
@@ -91,11 +91,11 @@ export default function ScanStatsDashboard({ lang }: ScanStatsDashboardProps) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4.5 relative z-10 pt-4">
         {/* KPI 1: Realtime Link scan counter */}
         <div className="bg-slate-50/70 border border-slate-100 p-5 rounded-2xl flex items-center gap-4 hover:shadow-sm transition-all group">
-          <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center transition-all group-hover:scale-105 group-hover:bg-indigo-100">
+          <div className="w-12 h-12 bg-indigo-50 text-indigo-700 rounded-xl flex items-center justify-center transition-all group-hover:scale-105 group-hover:bg-indigo-100">
             <TrendingUp className="w-5.5 h-5.5" />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
               {t.kpiTotalScans}
             </span>
             <span className="text-lg md:text-xl font-black text-slate-900 tracking-tight tabular-nums block">
@@ -106,15 +106,15 @@ export default function ScanStatsDashboard({ lang }: ScanStatsDashboardProps) {
 
         {/* KPI 2: Subscription retention growth */}
         <div className="bg-slate-50/70 border border-slate-100 p-5 rounded-2xl flex items-center gap-4 hover:shadow-sm transition-all group">
-          <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center transition-all group-hover:scale-105 group-hover:bg-red-100">
+          <div className="w-12 h-12 bg-red-50 text-red-700 rounded-xl flex items-center justify-center transition-all group-hover:scale-105 group-hover:bg-red-100">
             <BarChart3 className="w-5.5 h-5.5" />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
               {t.kpiGrowth}
             </span>
-            <span className="text-lg md:text-xl font-black text-emerald-600 tracking-tight block">
-              +400% <span className="text-[10px] text-slate-400 font-bold">({lang === 'ar' ? 'تفاعل مضاعف' : 'Engaged'})</span>
+            <span className="text-lg md:text-xl font-black text-emerald-700 tracking-tight block">
+              +400% <span className="text-[10px] text-slate-600 font-bold">({lang === 'ar' ? 'تفاعل مضاعف' : 'Engaged'})</span>
             </span>
           </div>
         </div>
@@ -125,14 +125,14 @@ export default function ScanStatsDashboard({ lang }: ScanStatsDashboardProps) {
             <Users className="w-5.5 h-5.5" />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block flex items-center gap-1.5">
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block flex items-center gap-1.5">
               <span>{t.kpiActive}</span>
-              <span className="inline-flex items-center px-1.5 py-0.5 text-[8px] font-extrabold bg-red-100 text-red-500 rounded-md animate-pulse">
+              <span className="inline-flex items-center px-1.5 py-0.5 text-[8px] font-extrabold bg-red-100 text-red-600 rounded-md animate-pulse">
                 {t.liveBadge}
               </span>
             </span>
             <span className="text-lg md:text-xl font-black text-slate-900 tracking-tight tabular-nums block">
-              +{activeCreators} <span className="text-[9px] text-slate-500 font-semibold">{lang === 'ar' ? 'قناة حية' : 'live users'}</span>
+              +{activeCreators} <span className="text-[9px] text-slate-600 font-semibold">{lang === 'ar' ? 'قناة حية' : 'live users'}</span>
             </span>
           </div>
         </div>

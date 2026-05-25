@@ -697,15 +697,15 @@ function HomeContent({ lang }: { lang: Language }) {
                       }}
                       className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 relative group/btn ${
                         platform === 'youtube'
-                          ? 'bg-red-50/70 border-red-300 text-red-600 shadow-sm ring-2 ring-red-500/10'
-                          : 'bg-slate-50/70 border-slate-100 text-slate-500 hover:text-red-500 hover:bg-red-50/30'
+                          ? 'bg-red-50/70 border-red-300 text-red-700 shadow-sm ring-2 ring-red-500/10'
+                          : 'bg-slate-50/70 border-slate-100 text-slate-700 hover:text-red-700 hover:bg-red-50/30'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <p.icon className={`w-5.5 h-5.5 text-red-600 transition-transform ${platform === 'youtube' ? 'scale-110 animate-pulse' : 'group-hover/btn:scale-110'}`} />
+                        <p.icon className={`w-5.5 h-5.5 text-red-700 transition-transform ${platform === 'youtube' ? 'scale-110 animate-pulse' : 'group-hover/btn:scale-110'}`} />
                         <span className="font-extrabold text-sm tracking-wide font-sans">YouTube Creator Focus</span>
                       </div>
-                      <span className="text-[9px] font-black bg-red-600 text-white px-2.5 py-1 rounded-lg tracking-wider">
+                      <span className="text-[9px] font-black bg-red-700 text-white px-2.5 py-1 rounded-lg tracking-wider">
                         {lang === 'ar' ? 'الأفضل للمشاهدات والاشتراك' : 'BEST FOR VIEWS & SUBS'}
                       </span>
                     </button>
@@ -714,7 +714,7 @@ function HomeContent({ lang }: { lang: Language }) {
 
                 {/* Secondary/Alternative row */}
                 <div className="pt-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-sans">
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-2 font-sans">
                     {lang === 'ar' ? 'أو اختر منصة تواصل بديلة' : 'Or Select Alternative Platform'}
                   </span>
                   <div className="grid grid-cols-4 gap-2">
