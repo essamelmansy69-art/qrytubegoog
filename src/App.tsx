@@ -1047,16 +1047,26 @@ function HomeContent({ lang }: { lang: Language }) {
 
 function MainLayout() {
   const [lang, setLang] = useState<Language>(() => {
+    // 1. URL parameter takes highest precedence
     const params = new URLSearchParams(window.location.search);
     const langParam = params.get('lang');
     if (langParam === 'en' || langParam === 'ar') {
+      localStorage.setItem('qrytube_lang', langParam);
       return langParam as Language;
     }
-    const browserLang = navigator.language || '';
-    if (browserLang.toLowerCase().startsWith('en')) {
-      return 'en';
+
+    // 2. LocalStorage remembers user manual selection
+    const savedLang = localStorage.getItem('qrytube_lang');
+    if (savedLang === 'en' || savedLang === 'ar') {
+      return savedLang as Language;
     }
-    return 'ar';
+
+    // 3. Auto-detect browser/system language: Arabic goes to 'ar', other languages default to 'en'
+    const browserLang = navigator.language || '';
+    if (browserLang.toLowerCase().startsWith('ar')) {
+      return 'ar';
+    }
+    return 'en';
   });
   const location = useLocation();
 
@@ -1065,10 +1075,12 @@ function MainLayout() {
     const langParam = params.get('lang');
     if (langParam === 'en' || langParam === 'ar') {
       setLang(langParam as Language);
+      localStorage.setItem('qrytube_lang', langParam);
     }
   }, [location.search]);
 
   useEffect(() => {
+    localStorage.setItem('qrytube_lang', lang);
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.title = lang === 'ar'
