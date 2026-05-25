@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ar">
   <head>
+    <!-- Preconnect destinations at absolute top of head for early connection negotiation -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-site-verification" content="6cF5Ntl61Q5JxBTYBVS6DJaYRankTJn0IrxmYES6vU0" />
@@ -8,17 +14,24 @@
     <meta name="description" content="أنشئ كود QR ذكي لروابط وقنوات اليوتيوب يتخطى عقبة المتصفح الداخلي المزعج لفيسبوك وتيك توك ويفتح التطبيق الرسمي مباشرة لزيادة اشتراكاتك ومشاهداتك تلقائياً." />
     <meta name="keywords" content="كود QR لليوتيوب, فتح روابط اليوتيوب داخل التطبيق مباشرة, روابط ذكية لزيادة المشاهدات والاشتراكات, يوتيوب الى تطبيق, روابط ذكية يوتيوب, deep link youtube, youtube qr code, bypass facebook browser" />
     
-    <!-- Preconnect to Google Fonts with high priority -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-    
-    <!-- High-Performance Asynchronous Non-blocking google font loader -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <!-- High-Performance Asynchronous Non-blocking google font loader with display=swap -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" as="style" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" media="all" font-display="swap" />
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" />
     </noscript>
+
+    <!-- Inline Critical CSS baseline to solve render-blocking and layout thrashing -->
+    <style>
+      body {
+        margin: 0;
+        background-color: #f5f8fa;
+        font-family: 'Cairo', 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      .gradient-bg {
+        background: radial-gradient(circle at 50% 0%, rgba(219, 234, 254, 0.4) 0%, rgba(245, 248, 250, 1) 100%);
+      }
+    </style>
 
     <!-- Language Alternates -->
     <link rel="alternate" hreflang="ar" href="https://qrytubegoog.essamelmansy69.workers.dev/" />
@@ -55,11 +68,14 @@
       }
     }
     </script>
-    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6a281d92d9654287977c054c89aff462"}'></script><!-- End Cloudflare Web Analytics -->
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Load primary application script with explicit defer module directive -->
+    <script type="module" defer src="/src/main.tsx"></script>
+
+    <!-- Cloudflare Web Analytics relocated to body end with async & defer to fully free main-thread parsing -->
+    <script async defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6a281d92d9654287977c054c89aff462"}'></script>
   </body>
 </html>
 
