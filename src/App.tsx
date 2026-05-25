@@ -1061,11 +1061,38 @@ function MainLayout() {
       return savedLang as Language;
     }
 
-    // 3. Auto-detect browser/system language: Arabic goes to 'ar', other languages default to 'en'
-    const browserLang = navigator.language || '';
-    if (browserLang.toLowerCase().startsWith('ar')) {
-      return 'ar';
+    // 3. Document cookies (e.g. set by Cloudflare Workers based on geolocation/Accept-Language header)
+    try {
+      const getCookie = (name: string) => {
+        const matches = document.cookie.match(new RegExp(
+          "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+      };
+      const cookieLang = getCookie('lang') || getCookie('cf_lang') || getCookie('locale');
+      if (cookieLang === 'en' || cookieLang === 'ar') {
+        return cookieLang as Language;
+      }
+    } catch (e) {
+      console.warn("Unable to read cookies:", e);
     }
+
+    // 4. Robust auto-detect from browser/system preferred languages list
+    try {
+      const systemLangs = navigator.languages || [];
+      const primaryLang = navigator.language || '';
+      
+      // Combine all languages and check if any start with 'ar' (Arabic)
+      const allDetectedLangs = [primaryLang, ...systemLangs].filter(Boolean);
+      const isArabicPreferred = allDetectedLangs.some(l => l.toLowerCase().startsWith('ar'));
+      
+      if (isArabicPreferred) {
+        return 'ar';
+      }
+    } catch (e) {
+      console.warn("Language auto-detection error:", e);
+    }
+
     return 'en';
   });
   const location = useLocation();
