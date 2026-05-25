@@ -62,8 +62,8 @@ const TRANSLATIONS = {
     
     errorInvalidUrl: '⚠️ الرجاء إدخال رابط يوتيوب صحيح (قناة، فيديو، أو قائمة تشغيل)!',
     
-    seoTitle: 'يوتيوب إلى تطبيق | مولد روابط ذكية وكود QR لزيادة المشاهدات',
-    seoDescription: 'حوّل روابط يوتيوب وسوشيال ميديا إلى روابط ذكية تفتح التطبيق الرسمي مباشرة وتخطى المتصفح الداخلي لزيادة تفاعلك واشتراكاتك بضغطة واحدة.',
+    seoTitle: 'Qrytube - كود QR لليوتيوب وتوليد روابط ذكية لزيادة المشاهدات',
+    seoDescription: 'أنشئ كود QR ذكي لروابط وقنوات اليوتيوب يتخطى عقبة المتصفح الداخلي المزعج لفيسبوك وتيك توك ويفتح التطبيق الرسمي مباشرة لزيادة اشتراكاتك ومشاهداتك تلقائياً.',
     
     faqTitle: 'الأسئلة الشائعة لصناع المحتوى واليوتيوبرز 💬',
     faqItems: [
@@ -1557,8 +1557,8 @@ function MainLayout() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.title = lang === 'ar'
-      ? 'يوتيوب إلى تطبيق | مولد روابط ذكية وكود QR لزيادة المشاهدات'
-      : 'TubeJump | Smart Deep Link & QR Code Generator for YouTube';
+      ? 'Qrytube - كود QR لليوتيوب وتوليد روابط ذكية لزيادة المشاهدات'
+      : 'Qrytube - YouTube QR Code & Smart Link Generator to Boost Views';
   }, [lang]);
 
   const t = TRANSLATIONS[lang];
