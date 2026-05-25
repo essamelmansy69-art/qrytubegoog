@@ -32,10 +32,10 @@ type Platform = 'general' | 'instagram' | 'youtube' | 'facebook' | 'tiktok';
 const TRANSLATIONS = {
   ar: {
     title: 'Qrytube',
-    headline: 'افتح روابط اليوتيوب',
-    headlineColor: 'داخل التطبيق مباشرة 🎬',
+    headline: 'كود QR لليوتيوب وتوليد روابط ذكية',
+    headlineColor: 'فتح روابط اليوتيوب داخل التطبيق مباشرة لزيادة المشاهدات والاشتراكات 🚀',
     trustBadge: '🌟 يثق بنا أكثر من 50,000 يوتيوبر وصانع محتوى حول العالم',
-    subHeadline: 'ضاعف مشاهداتك واشتراكاتك. امنع فتح الفيديوهات في متصفح فيسبوك وإنستجرام الداخلي المزعج واكسب جمهورك فوراً!',
+    subHeadline: 'تجنب عقبة المتصفح الداخلي المزعج لتطبيقات فيسبوك وإنستجرام وتيك توك الذي يمنع المشاهدين من تسجيل الإعجاب بالأزرار التفاعلية أو الاشتراك بقناتك على اليوتيوب. يقوم نظام Qrytube بتوجيه الجمهور فوراً إلى التطبيق الرسمي مباشرة مع دعم فرعي لكافة منصات السوشيال ميديا الأخرى.',
     
     labelPlatform: 'اختر المنصة المستهدفة',
     labelUrl: 'رابط فيديو أو قناة اليوتيوب',
@@ -82,6 +82,10 @@ const TRANSLATIONS = {
       {
         q: 'هل هذا المولد مجاني بالكامل وهل معلوماتي آمنة؟',
         a: 'نعم، الأداة مجانية 100% وبدون أي حدود للتوليد! كما أن العملية تتم بالكامل محلياً داخل متصفحك (Client-Side)، فلا يتم تخزين روابطك أو بياناتك في أي خادم خارجي لتوفير أقصى درجات الأمان والخصوصية المطلقة.'
+      },
+      {
+        q: 'كيف يساعدني نظام Qrytube في زيادة مشاهدات واشتراكات اليوتيوب؟',
+        a: 'تجنب عقبة المتصفح الداخلي المزعج لتطبيقات فيسبوك وإنستجرام وتيك توك الذي يمنع المشاهدين من تسجيل الإعجاب بالأزرار التفاعلية أو الاشتراك بقناتك على اليوتيوب. يقوم نظام Qrytube بتوجيه الجمهور فوراً إلى التطبيق الرسمي مباشرة مع دعم فرعي لكافة منصات السوشيال ميديا الأخرى.'
       }
     ],
 
@@ -129,10 +133,10 @@ const TRANSLATIONS = {
   },
   en: {
     title: 'Qrytube',
-    headline: 'Open YouTube Links',
-    headlineColor: 'Directly Inside the App 🎬',
+    headline: 'YouTube QR Code & Smart Link Generator',
+    headlineColor: 'Open YouTube Links Directly In-App (Boost Views & Subs) 🚀',
     trustBadge: '🌟 Trusted by over 50,050 YouTube Creators worldwide',
-    subHeadline: 'Boost your views and subscribers. Bypass the annoying in-app browsers and redirect mobile users directly to the official YouTube app natively!',
+    subHeadline: 'Overcome frustrating Instagram, Facebook, and TikTok back-to-app obstacles that prevent users from liking, commenting, or subscribing. Redirect viewers natively into the official YouTube app, with secondary support for all major social networks.',
     
     labelPlatform: 'Select Target Platform',
     labelUrl: 'YouTube Video or Channel Link',
@@ -179,6 +183,10 @@ const TRANSLATIONS = {
       {
         q: 'Can I embed my personal channel logo inside the generated QR code?',
         a: 'Yes! Our custom uploader shrinks, sanitizes, and places your dynamic logo directly at the center of the QR code. This increases scanning credibility and maintains consistent brand aesthetics without obstructing readability.'
+      },
+      {
+        q: 'How does the Qrytube system help me increase YouTube views and subscribers?',
+        a: 'Overcome frustrating Instagram, Facebook, and TikTok back-to-app obstacles that prevent users from liking, commenting, or subscribing. Redirect viewers natively into the official YouTube app, with secondary support for all major social networks.'
       }
     ],
 
@@ -1066,22 +1074,14 @@ function HomeContent({ lang }: { lang: Language }) {
 
   return (
     <div className="max-w-5xl mx-auto space-y-16">
-      {/* Trust Badge & Headline Section */}
-      <div className="text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-white shadow-sm rounded-full border border-slate-200/50 text-slate-600 text-[13px] font-bold tracking-tight">
-          <span>{t.trustBadge}</span>
-        </div>
-        <div className="space-y-3">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-            {t.headline} <br />
-            <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 bg-clip-text text-transparent">
-              {t.headlineColor}
-            </span>
-          </h2>
-          <p className="text-slate-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-medium">
-            {t.subHeadline}
-          </p>
-        </div>
+      {/* Headline Section */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
+          {t.headline} <br />
+          <span className="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 bg-clip-text text-transparent text-xl md:text-3xl block mt-2 leading-tight">
+            {t.headlineColor}
+          </span>
+        </h1>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 items-start">
