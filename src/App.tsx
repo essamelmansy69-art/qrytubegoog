@@ -925,7 +925,10 @@ function HomeContent({ lang }: { lang: Language }) {
   }, [url, platform, logo, qrColor, getDeepLink, validateInput, lang]);
 
   useEffect(() => {
-    generateQR();
+    const timer = setTimeout(() => {
+      generateQR();
+    }, 200);
+    return () => clearTimeout(timer);
   }, [generateQR]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
