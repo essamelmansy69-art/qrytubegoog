@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase';
 
 const BlogPage = React.lazy(() => import('./components/BlogPage'));
 const ContactPage = React.lazy(() => import('./components/ContactPage'));
@@ -263,6 +265,33 @@ function HomeContent({ lang }: { lang: Language }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = TRANSLATIONS[lang];
 
+  // Dynamic QR Code States
+  const [generatedId, setGeneratedId] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [liveScans, setLiveScans] = useState<number>(0);
+
+  // Clear loaded dynamic entries if link or platform updates
+  useEffect(() => {
+    setGeneratedId(null);
+    setLiveScans(0);
+  }, [url, platform]);
+
+  // Real-time listener for tracking scans count dynamically
+  useEffect(() => {
+    if (!generatedId) return;
+    const unsubscribe = onSnapshot(doc(db, "qrcodes", generatedId), 
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setLiveScans(docSnap.data().scans || 0);
+        }
+      },
+      (err) => {
+        console.error("Firestore onSnapshot scans sync error: ", err);
+      }
+    );
+    return () => unsubscribe();
+  }, [generatedId]);
+
   const getPlaceholder = useCallback(() => {
     if (lang === 'ar') {
       switch (platform) {
@@ -441,7 +470,9 @@ function HomeContent({ lang }: { lang: Language }) {
       return;
     }
 
-    const finalUrl = getDeepLink(url || 'https://qrytube.app', platform);
+    const finalUrl = generatedId 
+      ? `${window.location.origin}/redirect.html?id=${generatedId}`
+      : getDeepLink(url || 'https://qrytube.app', platform);
     
     try {
       const tempCanvas = document.createElement('canvas');
@@ -497,7 +528,7 @@ function HomeContent({ lang }: { lang: Language }) {
     } catch (err) {
       console.error(err);
     }
-  }, [url, platform, logo, qrColor, getDeepLink, validateInput, lang]);
+  }, [url, platform, logo, qrColor, getDeepLink, validateInput, lang, generatedId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -576,7 +607,9 @@ function HomeContent({ lang }: { lang: Language }) {
     setDownloadingSvg(true);
     setDownloadedSvg(false);
 
-    const finalUrl = getDeepLink(url || 'https://qrytube.app', platform);
+    const finalUrl = generatedId 
+      ? `${window.location.origin}/redirect.html?id=${generatedId}`
+      : getDeepLink(url || 'https://qrytube.app', platform);
     try {
       const qrcodeModule = await import('qrcode');
       const qrObj = qrcodeModule.default || qrcodeModule;
@@ -644,8 +677,44 @@ function HomeContent({ lang }: { lang: Language }) {
     }
   };
 
+  const generateDynamic = async () => {
+    const clean = url.trim();
+    if (!clean || !validateInput(clean, platform)) {
+      setError(lang === 'ar' ? 'الرجاء إدخال رابط أو اسم مستخدم صحيح أولاً!' : 'Please enter a valid link or username first!');
+      return;
+    }
+    
+    setIsGenerating(true);
+    setError(null);
+    try {
+      // Generate a highly secure random 8-character alphanumeric key
+      const randomId = Math.random().toString(36).substring(2, 6) + Math.random().toString(36).substring(2, 6);
+      const targetDeepLink = getDeepLink(clean, platform);
+      
+      await setDoc(doc(db, "qrcodes", randomId), {
+        id: randomId,
+        originalUrl: clean,
+        targetUrl: targetDeepLink,
+        platform: platform,
+        scans: 0,
+        createdAt: new Date().toISOString()
+      });
+      
+      setGeneratedId(randomId);
+      setLiveScans(0);
+    } catch (err: any) {
+      console.error("Firebase error saving dynamic link: ", err);
+      setError(lang === 'ar' ? 'حدث خطأ أثناء الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.' : 'Error establishing connection with Firestore database. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const copyUrl = () => {
-    navigator.clipboard.writeText(url);
+    const clipText = generatedId 
+      ? `${window.location.origin}/redirect.html?id=${generatedId}`
+      : url;
+    navigator.clipboard.writeText(clipText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -796,110 +865,81 @@ function HomeContent({ lang }: { lang: Language }) {
               </AnimatePresence>
             </div>
 
-            {/* Customization Row (Logo & Custom Color) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Color Customizer */}
-              <div className="space-y-3">
-                <label htmlFor="qr-color-input" className="text-xs font-bold text-slate-700 uppercase tracking-widest block font-sans">
-                  {t.labelQrColor}
-                </label>
-                <div className="flex items-center gap-2 bg-slate-50/70 border border-slate-200/80 p-3 rounded-2xl">
-                  <span className="text-xs font-mono text-slate-600 uppercase select-all flex-grow">
-                    {qrColor}
-                  </span>
-                  <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-300 shadow-sm cursor-pointer hover:scale-105 transition-transform">
-                    <input
-                      id="qr-color-input"
-                      type="color"
-                      aria-label={t.labelQrColor}
-                      value={qrColor}
-                      onChange={(e) => setQrColor(e.target.value)}
-                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                    />
-                    <div className="w-full h-full" style={{ backgroundColor: qrColor }} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Upload Logo customizer */}
-              <div className="space-y-3">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-widest block font-sans">
-                  {t.labelLogo}
-                </span>
-                <div className="flex gap-2">
-                  <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
-                  <label 
-                    htmlFor="logo-upload" 
-                    className="flex-grow flex items-center justify-center gap-2 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3 text-xs font-bold hover:bg-slate-100 cursor-pointer transition-all text-slate-800 hover:border-slate-300 font-sans"
-                  >
-                    <Upload className="w-4 h-4 text-slate-600" />
-                    <span className="truncate">{t.uploadLogo}</span>
-                  </label>
-                  {logo && (
-                    <button 
-                      type="button"
-                      onClick={() => setLogo(null)} 
-                      aria-label={lang === 'ar' ? 'إزالة الشعار' : 'Remove Logo'}
-                      className="p-3 border border-red-200/80 text-red-500 rounded-2xl hover:bg-red-50 hover:text-white transition-all"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
             {/* Magic Dynamic Action Button */}
             <div className="pt-2">
-              <button
-                onClick={handleDownloadPNGClick}
-                disabled={!url || !!error}
-                className={`w-full bg-gradient-to-r text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg transition-all disabled:from-slate-150 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic relative overflow-hidden duration-300 ${
-                  platform === 'youtube'
-                    ? 'from-red-600 via-red-500 to-rose-600 shadow-red-500/15 hover:opacity-90'
-                    : platform === 'instagram'
-                      ? 'from-pink-500 via-rose-500 to-purple-600 shadow-rose-500/15 hover:opacity-90'
-                      : platform === 'facebook'
-                        ? 'from-blue-600 via-blue-500 to-indigo-600 shadow-blue-500/15 hover:opacity-90'
-                        : platform === 'tiktok'
-                          ? 'from-zinc-900 via-zinc-800 to-slate-900 shadow-slate-900/10 hover:opacity-90 border border-white/5'
-                          : 'from-blue-500 via-indigo-500 to-purple-600 shadow-indigo-500/15 hover:opacity-95'
-                }`}
-              >
-                {downloading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    <span>{t.downloading}</span>
-                  </>
-                ) : downloaded ? (
-                  <>
-                    <Check className="w-5 h-5 text-emerald-300 animate-bounce" />
-                    <span>{t.downloaded}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>✨</span>
-                    <span>{t.download}</span>
-                    <span className="group-hover/magic:translate-x-1 transition-transform">⚡</span>
-                  </>
-                )}
-              </button>
+              {!generatedId ? (
+                <button
+                  onClick={generateDynamic}
+                  disabled={!url || !!error || isGenerating}
+                  className={`w-full bg-gradient-to-r text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg transition-all disabled:from-slate-150 disabled:to-slate-250 disabled:text-slate-400 disabled:shadow-none disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic relative overflow-hidden duration-300 ${
+                    platform === 'youtube'
+                      ? 'from-red-600 via-red-500 to-rose-600 shadow-red-500/15 hover:opacity-90'
+                      : platform === 'instagram'
+                        ? 'from-pink-500 via-rose-500 to-purple-600 shadow-rose-500/15 hover:opacity-90'
+                        : platform === 'facebook'
+                          ? 'from-blue-600 via-blue-500 to-indigo-600 shadow-blue-500/15 hover:opacity-90'
+                          : platform === 'tiktok'
+                            ? 'from-zinc-900 via-zinc-800 to-slate-900 shadow-slate-900/10 hover:opacity-90 border border-white/5'
+                            : 'from-blue-500 via-indigo-500 to-purple-600 shadow-indigo-500/15 hover:opacity-95'
+                  }`}
+                >
+                  {isGenerating ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>{lang === 'ar' ? 'جاري التوليد والحفظ بقاعدة البيانات... ⚡' : 'Saving & Generating QR Code... ⚡'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✨</span>
+                      <span>{lang === 'ar' ? 'توليد كود الـ QR الديناميكي الذكي 🚀' : 'Generate Smart Dynamic QR Code 🚀'}</span>
+                      <span className="group-hover/magic:translate-x-1 transition-transform">⚡</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={handleDownloadPNGClick}
+                  disabled={!url || !!error}
+                  className="w-full bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500 text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/15 hover:opacity-95 transition-all active:scale-[0.98] flex items-center justify-center gap-3.5 group/magic duration-300"
+                >
+                  {downloading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>{t.downloading}</span>
+                    </>
+                  ) : downloaded ? (
+                    <>
+                      <Check className="w-5 h-5 text-emerald-300 animate-bounce" />
+                      <span>{t.downloaded}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>📥</span>
+                      <span>{lang === 'ar' ? 'تحميل كود الـ QR جاهزاً بصيغة PNG' : 'Download QR Code image (PNG)'}</span>
+                      <span>⚡</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         {/* QR Code Interactive Preview Panel */}
-        <div className="bg-white border border-slate-100 shadow-custom-card p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-between min-h-[420px]">
+        <div className="bg-white border border-slate-100 shadow-custom-card p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-between min-h-[420px] w-full min-w-0 max-w-full overflow-hidden">
           <div className="w-full flex justify-between items-center mb-6">
             <span className="inline-flex items-center gap-2 px-3.5 py-1 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full font-sans">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
-              Live Preview
+              {generatedId ? (lang === 'ar' ? 'كود ديناميكي نشط' : 'Active Dynamic Code') : (lang === 'ar' ? 'معاينة مباشرة' : 'Live Preview')}
             </span>
             {platform !== 'general' && (
-              <span className="text-xs font-bold text-slate-605 uppercase tracking-widest font-sans">
+              <span className="text-xs font-bold text-slate-600 uppercase tracking-widest font-sans">
                 {platform} mode
               </span>
             )}
@@ -909,7 +949,31 @@ function HomeContent({ lang }: { lang: Language }) {
             <canvas ref={canvasRef} aria-label={lang === 'ar' ? 'معاينة كود الـ QR' : 'QR Code Preview'} className="w-full h-full max-w-[220px]" />
           </div>
 
-          <div className="w-full space-y-3 mt-8">
+          {generatedId && (
+            <div className="w-full mt-5 bg-emerald-50/75 border border-emerald-100 p-4 rounded-2xl flex flex-col items-center justify-between text-center gap-1 animate-fade-in relative overflow-hidden min-w-0 max-w-full">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full blur-xl"></div>
+              <div className="flex items-center gap-2 text-emerald-850 font-extrabold text-sm font-sans">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span>{lang === 'ar' ? 'لوحة تتبع المسحات المباشرة 📊' : 'Live Scan Tracking Dashboard 📊'}</span>
+              </div>
+              <div className="text-3xl font-black text-emerald-900 font-mono my-2 tracking-wider">
+                {liveScans}
+              </div>
+              <p className="text-[10px] text-emerald-600 font-bold leading-relaxed max-w-[90%]">
+                {lang === 'ar' 
+                  ? 'يتم تحديث عدد الزيارات والمسحات فورا وبدون أي تأخير باستخدام Firebase.' 
+                  : 'Scans and visits are updated in real-time instantly powered by Firebase.'}
+              </p>
+              <div className="w-full border-t border-emerald-200/50 mt-3 pt-2 px-2 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-500 font-extrabold block mb-1 text-right">{lang === 'ar' ? 'رابط التوجيه الذكي:' : 'Smart redirect link:'}</span>
+                <div className="text-[11px] font-mono text-indigo-600 overflow-x-auto whitespace-nowrap select-all bg-white/95 py-2.5 px-3 rounded-xl border border-slate-200 shadow-sm text-left max-w-full block w-full">
+                  {window.location.origin}/redirect.html?id={generatedId}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="w-full space-y-3 mt-6">
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={downloadSVG}
@@ -944,7 +1008,7 @@ function HomeContent({ lang }: { lang: Language }) {
                 className="bg-slate-50 border border-slate-200/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100 py-3 rounded-2xl font-bold text-xs uppercase tracking-wide transition-all disabled:opacity-30 active:scale-95 flex items-center justify-center gap-2 font-sans"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                {t.copy}
+                {copied ? t.copied : t.copy}
               </button>
             </div>
           </div>

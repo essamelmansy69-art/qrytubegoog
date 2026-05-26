@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "QRCode": {
+      "title": "QR Code",
+      "description": "A dynamic redirect QR code entry",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique short identifier for the custom redirect link"
+        },
+        "originalUrl": {
+          "type": "string",
+          "description": "The original URL entered by the client"
+        },
+        "targetUrl": {
+          "type": "string",
+          "description": "The computed app deep link redirect destination"
+        },
+        "platform": {
+          "type": "string",
+          "description": "The target social media platform"
+        },
+        "scans": {
+          "type": "number",
+          "description": "Total number of times this QR code redirect was scanned"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["id", "originalUrl", "targetUrl", "platform", "scans"]
+    }
+  },
+  "firestore": {
+    "/qrcodes/{qrcodeId}": {
+      "schema": "QRCode",
+      "description": "Stored dynamic QR redirect codes"
+    }
+  }
+}

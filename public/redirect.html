@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جاري التوجيه تلقائياً... | Qrytube Redirect</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Cairo', 'Inter', sans-serif;
+      background-color: #0f172a;
+    }
+    .pulse-glow {
+      box-shadow: 0 0 15px 5px rgba(99, 102, 241, 0.4);
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px 5px rgba(99, 102, 241, 0.4);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 25px 12px rgba(99, 102, 241, 0.6);
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col items-center justify-center p-4 antialiased">
+
+  <div class="max-w-md w-full bg-slate-900/80 backdrop-blur-md rounded-3xl p-8 border border-slate-800 text-center shadow-2xl relative overflow-hidden">
+    
+    <!-- Visual background accent -->
+    <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl"></div>
+    <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-rose-600/10 rounded-full blur-2xl"></div>
+
+    <!-- Main Container -->
+    <div id="loader-view" class="space-y-6">
+      <!-- Pulsing Loader Icon -->
+      <div class="flex justify-center">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white pulse-glow">
+          <svg class="w-10 h-10 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Main Text -->
+      <div class="space-y-2">
+        <h2 class="text-xl md:text-2xl font-black text-white tracking-tight">جاري توجيهك الآن...</h2>
+        <p class="text-sm text-slate-400 font-medium">نقوم الآن بتحميل الرابط وتشغيل التطبيق الرسمي لضمان أفضل تفاعل.</p>
+      </div>
+
+      <!-- Status Indicator -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-semibold text-indigo-400 tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        توجيه ديناميكي ذكي آمن
+      </div>
+    </div>
+
+    <!-- Error View (Hidden initially) -->
+    <div id="error-view" class="hidden space-y-6">
+      <div class="flex justify-center">
+        <div class="w-16 h-16 rounded-2xl bg-rose-950/45 border border-rose-900 text-rose-500 flex items-center justify-center text-3xl">
+          ⚠️
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-lg font-bold text-white leading-snug" id="error-title">عذراً، الرابط غير موجود أو منتهي الصلاحية</h2>
+        <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-medium" id="error-message">لم نتمكن من الحصول على الكود المطلوب من قاعدة البيانات. يرجى مراجعة مرسل الكود أو تجربة توليد كود جديد.</p>
+      </div>
+      <div class="pt-4">
+        <a href="/" class="inline-block bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-3 px-6 rounded-xl border border-slate-700 transition-all">
+          الذهاب لمولد Qrytube
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Brand Footer -->
+  <div class="mt-8 text-center space-y-1 text-slate-500 text-[11px] font-sans font-medium">
+    <p>© 2026 Qrytube Systems - كود QR ديناميكي ذكي</p>
+    <p>Dynamic Redirect Service • Pure Speed & Privacy</p>
+  </div>
+
+  <!-- Firebase Logic integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCM5cbYlFA1JpACE9LTZzxg9hH3tg4EPfI",
+      authDomain: "qrytube-2b3dc.firebaseapp.com",
+      projectId: "qrytube-2b3dc",
+      storageBucket: "qrytube-2b3dc.firebasestorage.app",
+      messagingSenderId: "131039163083",
+      appId: "1:131039163083:web:7db7c52d837cb70e21614e",
+      measurementId: "G-VFBG6JEKR4"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Parse URL parameter
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    if (!id) {
+       showError(
+         "لم يحدد معرّف صحيح للتوجيه",
+         "The redirect URL query requires a valid ID. Please add '?id=[UID]' to specify destination."
+       );
+    } else {
+       doRedirect(id);
+    }
+
+    async function doRedirect(uid) {
+      try {
+        const docRef = doc(db, "qrcodes", uid);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          showError(
+            "كود الـ QR هذا غير متوفر أو محذوف",
+            "This dynamic QR code was not found in Firestore. Verify the ID or create a new one."
+          );
+          return;
+        }
+
+        const data = docSnap.data();
+        const originalUrl = data.originalUrl || "";
+        const targetUrl = data.targetUrl || "";
+        const platform = data.platform || "general";
+
+        if (!originalUrl) {
+          showError("عذراً، الرابط الموجه فارغ", "The destination link field contains empty values.");
+          return;
+        }
+
+        // Increment scan count in database
+        try {
+          await updateDoc(docRef, {
+            scans: increment(1)
+          });
+        } catch (e) {
+          console.error("Failed to update scan counter stats", e);
+        }
+
+        // Helper function to resolve absolute HTTP/HTTPS URL
+        function getCleanWebUrl(original, plat) {
+          let clean = (original || "").trim();
+          if (!clean) return "";
+
+          // If it's already a full http/https link
+          if (/^https?:\/\//i.test(clean)) {
+            return clean;
+          }
+
+          // Check if it's a username or handle based on platform
+          switch (plat) {
+            case 'youtube':
+              if (!clean.includes('.') && !clean.includes('/')) {
+                const handle = clean.startsWith('@') ? clean : '@' + clean;
+                return `https://www.youtube.com/${handle}`;
+              }
+              break;
+            case 'instagram':
+              if (!clean.includes('.') && !clean.includes('/')) {
+                return `https://www.instagram.com/${clean}`;
+              }
+              break;
+            case 'facebook':
+              if (!clean.includes('.') && !clean.includes('/')) {
+                return `https://www.facebook.com/${clean}`;
+              }
+              break;
+            case 'tiktok':
+              if (!clean.includes('.') && !clean.includes('/')) {
+                const handle = clean.startsWith('@') ? clean : '@' + clean;
+                return `https://www.tiktok.com/${handle}`;
+              }
+              break;
+          }
+
+          // Default fallback: if it doesn't have protocol but has dots or slashes
+          return `https://${clean}`;
+        }
+
+        const webUrl = getCleanWebUrl(originalUrl, platform);
+
+        // Check if device is desktop or mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const hasDeepProtocol = /^(vnd\.youtube:|fb:|instagram:|tg:|twitter:|snapchat:|whatsapp:)/i.test(targetUrl);
+
+        if (isMobile && hasDeepProtocol) {
+          // Attempt deep link execution on mobile
+          window.location.href = targetUrl;
+          
+          // Set safety fallback after a minimal delay to the HTTP/HTTPS link if standard deep link misses
+          setTimeout(() => {
+            window.location.replace(webUrl);
+          }, 800);
+        } else {
+          // Normal HTTP or HTTPS web link, or on desktop - direct replacement
+          window.location.replace(webUrl);
+        }
+
+      } catch (err) {
+        console.error("Firebase fetch error", err);
+        showError(
+          "حدث خطأ أثناء الاتصال بقاعدة البيانات",
+          "A network or cloud communication error occurred. Detailed technical details: " + err.message
+        );
+      }
+    }
+
+    function showError(title, msg) {
+      document.getElementById("loader-view").classList.add("hidden");
+      const errView = document.getElementById("error-view");
+      errView.classList.remove("hidden");
+      document.getElementById("error-title").textContent = title;
+      document.getElementById("error-message").textContent = msg;
+    }
+  </script>
+</body>
+</html>
