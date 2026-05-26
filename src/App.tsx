@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 const BlogPage = React.lazy(() => import('./components/BlogPage'));
 const ContactPage = React.lazy(() => import('./components/ContactPage'));
 const LegalPage = React.lazy(() => import('./components/LegalPage'));
+const AboutPage = React.lazy(() => import('./components/AboutPage'));
 import { 
   QrCode, 
   Download, 
@@ -119,6 +120,7 @@ const TRANSLATIONS = {
     privacy: 'الخصوصية',
     terms: 'الشروط',
     contact: 'اتصل بنا',
+    about: 'من نحن',
     
     contactForm: {
       name: 'الاسـم',
@@ -220,6 +222,7 @@ const TRANSLATIONS = {
     privacy: 'Privacy',
     terms: 'Terms',
     contact: 'Contact',
+    about: 'About Us',
 
     contactForm: {
       name: 'Full Name',
@@ -1162,6 +1165,7 @@ function MainLayout() {
             }>
               <Routes location={location}>
                 <Route path="/" element={<HomeContent lang={lang} />} />
+                <Route path="/about" element={<AboutPage lang={lang} />} />
                 <Route path="/blog" element={<BlogPage lang={lang} />} />
                 <Route path="/privacy" element={<LegalPage lang={lang} type="privacy" />} />
                 <Route path="/terms" element={<LegalPage lang={lang} type="terms" />} />
@@ -1176,6 +1180,7 @@ function MainLayout() {
         <div className="max-w-7xl mx-auto px-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6 text-[11px] font-bold text-slate-700 tracking-wider flex-wrap justify-center">
+               <Link to="/about" className="hover:text-indigo-600 transition-all uppercase">{t.about}</Link>
                <Link to="/blog" className="hover:text-indigo-600 transition-all uppercase">{t.navArticles}</Link>
                <Link to="/privacy" className="hover:text-indigo-600 transition-all uppercase">{t.privacy}</Link>
                <Link to="/terms" className="hover:text-indigo-600 transition-all uppercase">{t.terms}</Link>
