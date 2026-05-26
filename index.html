@@ -85,8 +85,26 @@
     <!-- Load primary application script with explicit defer module directive -->
     <script type="module" defer src="/src/main.tsx"></script>
 
-    <!-- Cloudflare Web Analytics relocated to body end with async & defer to fully free main-thread parsing -->
-    <script async defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6a281d92d9654287977c054c89aff462"}'></script>
+    <!-- Cloudflare Web Analytics loaded dynamically post first user interaction to fully optimize FCP/LCP -->
+    <script>
+      (function() {
+        const events = ['scroll', 'touchstart', 'mousedown', 'keydown'];
+        function loadAnalytics() {
+          events.forEach(function(event) {
+            window.removeEventListener(event, loadAnalytics);
+          });
+          const script = document.createElement('script');
+          script.async = true;
+          script.defer = true;
+          script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+          script.setAttribute('data-cf-beacon', JSON.stringify({ "token": "6a281d92d9654287977c054c89aff462" }));
+          document.body.appendChild(script);
+        }
+        events.forEach(function(event) {
+          window.addEventListener(event, loadAnalytics, { passive: true });
+        });
+      })();
+    </script>
   </body>
 </html>
 
