@@ -1049,16 +1049,50 @@ function MainLayout() {
     const langParam = params.get('lang');
     if (langParam === 'en' || langParam === 'ar') {
       localStorage.setItem('qrytube_lang', langParam);
+      localStorage.setItem('qrytube_lang_manual', 'true');
       return langParam as Language;
     }
 
-    // 2. LocalStorage remembers user manual selection
-    const savedLang = localStorage.getItem('qrytube_lang');
-    if (savedLang === 'en' || savedLang === 'ar') {
-      return savedLang as Language;
+    // 2. LocalStorage remembers user manual selection (if they ever clicked explicitly)
+    const hasManualSelection = localStorage.getItem('qrytube_lang_manual') === 'true';
+    if (hasManualSelection) {
+      const savedLang = localStorage.getItem('qrytube_lang');
+      if (savedLang === 'en' || savedLang === 'ar') {
+        return savedLang as Language;
+      }
     }
 
-    // 3. Document cookies (e.g. set by Cloudflare Workers based on geolocation/Accept-Language header)
+    // 3. Dynamic Auto-Detection (Timezone-based) to prioritize Arabic for Egyptian and other Arab users
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const arabicTimezones = [
+        'cairo', 'riyadh', 'dubai', 'baghdad', 'sanaa', 'amman', 'beirut', 'damascus', 'kuwait', 'qatar',
+        'bahrain', 'muscat', 'tripoli', 'tunis', 'algiers', 'casablanca', 'khartoum', 'gaza', 'jerusalem', 'hebron'
+      ];
+      if (tz && arabicTimezones.some(t => tz.toLowerCase().includes(t))) {
+        return 'ar';
+      }
+    } catch (e) {
+      console.warn("Timezone language detection error:", e);
+    }
+
+    // 4. Robust auto-detect from browser/system preferred languages list
+    try {
+      const systemLangs = navigator.languages || [];
+      const primaryLang = navigator.language || '';
+      
+      // Combine all languages and check if any start with 'ar' (Arabic) or matches Egypt
+      const allDetectedLangs = [primaryLang, ...systemLangs].filter(Boolean);
+      const isArabicPreferred = allDetectedLangs.some(l => l.toLowerCase().startsWith('ar') || l.toLowerCase().includes('eg'));
+      
+      if (isArabicPreferred) {
+        return 'ar';
+      }
+    } catch (e) {
+      console.warn("Language auto-detection error:", e);
+    }
+
+    // 5. Document cookies (e.g. set by Cloudflare Workers based on geolocation/Accept-Language header)
     try {
       const getCookie = (name: string) => {
         const matches = document.cookie.match(new RegExp(
@@ -1074,20 +1108,10 @@ function MainLayout() {
       console.warn("Unable to read cookies:", e);
     }
 
-    // 4. Robust auto-detect from browser/system preferred languages list
-    try {
-      const systemLangs = navigator.languages || [];
-      const primaryLang = navigator.language || '';
-      
-      // Combine all languages and check if any start with 'ar' (Arabic)
-      const allDetectedLangs = [primaryLang, ...systemLangs].filter(Boolean);
-      const isArabicPreferred = allDetectedLangs.some(l => l.toLowerCase().startsWith('ar'));
-      
-      if (isArabicPreferred) {
-        return 'ar';
-      }
-    } catch (e) {
-      console.warn("Language auto-detection error:", e);
+    // 6. Non-manual saved selection if available as standard fallback
+    const savedLang = localStorage.getItem('qrytube_lang');
+    if (savedLang === 'en' || savedLang === 'ar') {
+      return savedLang as Language;
     }
 
     return 'en';
@@ -1126,7 +1150,11 @@ function MainLayout() {
           {/* Language selector pill on left */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+              onClick={() => {
+                const targetLang = lang === 'ar' ? 'en' : 'ar';
+                setLang(targetLang);
+                localStorage.setItem('qrytube_lang_manual', 'true');
+              }}
               aria-label={lang === 'ar' ? "Change language to English" : "تغيير اللغة إلى الإنجليزية"}
               className="group/lang text-xs font-bold text-slate-700 hover:text-indigo-600 flex items-center gap-2 border border-slate-200 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-slate-50 transition-all font-sans cursor-pointer whitespace-nowrap"
             >
