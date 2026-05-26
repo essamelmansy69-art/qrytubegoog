@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
-const ScanStatsDashboard = React.lazy(() => import('./components/ScanStatsDashboard'));
 const BlogPage = React.lazy(() => import('./components/BlogPage'));
 const ContactPage = React.lazy(() => import('./components/ContactPage'));
 const LegalPage = React.lazy(() => import('./components/LegalPage'));
@@ -997,11 +996,6 @@ function HomeContent({ lang }: { lang: Language }) {
         </div>
       </div>
 
-      {/* Dynamic D3.js scanned codes dashboard block */}
-      <React.Suspense fallback={<div className="h-64 bg-slate-50 border border-slate-100/50 rounded-[2.5rem] animate-pulse" />}>
-        <ScanStatsDashboard lang={lang} />
-      </React.Suspense>
-
       {/* Accordion List FAQ block */}
       <div className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] space-y-8 shadow-custom-card">
         <h2 className="text-2xl md:text-3xl font-black text-slate-950 text-center tracking-tight">
@@ -1178,53 +1172,16 @@ function MainLayout() {
         </AnimatePresence>
       </main>
 
-      <footer className="py-16 border-t border-slate-100 mt-20 bg-white shadow-header">
+      <footer className="py-12 border-t border-slate-100 mt-20 bg-white">
         <div className="max-w-7xl mx-auto px-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
-            <div className="flex flex-col gap-3">
-               <div className="flex items-center gap-3">
-                 <div className="p-2 bg-indigo-100 rounded-lg">
-                   <QrCode className="w-4 h-4 text-indigo-600" />
-                 </div>
-                 <span className="text-xl font-black text-slate-800 uppercase tracking-tighter">{t.title}</span>
-               </div>
-               <p className="text-sm text-slate-600 max-w-sm font-medium leading-relaxed">{t.seoDescription}</p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {[Instagram, Facebook, Youtube, Share2].map((Icon, i) => {
-                const iconLabels = lang === 'ar' 
-                  ? ['إنستغرام', 'فيسبوك', 'يوتيوب', 'مشاركة'] 
-                  : ['Instagram', 'Facebook', 'YouTube', 'Share'];
-                return (
-                  <a 
-                    key={i} 
-                    href="#" 
-                    aria-label={iconLabels[i]}
-                    className="w-11 h-11 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:text-white hover:bg-indigo-600 hover:border-indigo-500 transition-all active:scale-90"
-                  >
-                    <Icon className="w-4 h-4" />
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-slate-150 gap-8">
-            <div className="flex flex-col gap-1.5 text-center md:text-start">
-               <span className="text-xs font-black text-slate-700 uppercase tracking-widest">{t.title} System</span>
-               <span className="text-xs font-medium text-slate-700 uppercase tracking-wide">{t.footer}</span>
-            </div>
-
-            <div className="flex items-center gap-8 text-[11px] font-bold text-slate-700 tracking-wider flex-wrap justify-center">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-6 text-[11px] font-bold text-slate-700 tracking-wider flex-wrap justify-center">
                <Link to="/blog" className="hover:text-indigo-600 transition-all uppercase">{t.navArticles}</Link>
                <Link to="/privacy" className="hover:text-indigo-600 transition-all uppercase">{t.privacy}</Link>
                <Link to="/terms" className="hover:text-indigo-600 transition-all uppercase">{t.terms}</Link>
                <Link to="/contact" className="hover:text-indigo-600 transition-all uppercase">{t.contact}</Link>
             </div>
-          </div>
 
-          <div className="mt-12 pt-8 border-t border-slate-100 text-center">
             <p className="text-xs font-semibold text-slate-600 font-sans tracking-wide">
               © 2026 Qrytube. All rights reserved.
             </p>
