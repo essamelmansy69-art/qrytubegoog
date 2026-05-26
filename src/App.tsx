@@ -1131,20 +1131,35 @@ function MainLayout() {
               className="group/lang text-xs font-bold text-slate-700 hover:text-indigo-600 flex items-center gap-2 border border-slate-200 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-slate-50 transition-all font-sans cursor-pointer whitespace-nowrap"
             >
               <span>{lang === 'ar' ? 'English' : 'العربية'}</span>
-              <Globe className="w-3.5 h-3.5 text-indigo-500 group-hover/lang:rotate-180 transition-transform duration-700" />
+              <Globe className="w-3.5 h-3.5 text-indigo-500 group-hover/lang:rotate-180 transition-transform duration-700" width={14} height={14} />
             </button>
           </div>
 
-          {/* Core Brand center */}
-          <Link to="/" className="flex items-center gap-1.5 group">
-            <span className="text-2xl font-black tracking-tighter text-slate-900 capitalize">
-              💥 Qrytube
+          {/* Core Brand center with optimized LCP vector emblem */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <svg 
+              width="28" 
+              height="28" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="text-indigo-600 w-7 h-7 group-hover:rotate-6 transition-transform duration-300"
+              fetchPriority="high"
+            >
+              <rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+              <rect x="15" y="2" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+              <rect x="2" y="15" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+              <circle cx="18" cy="18" r="2.5" fill="currentColor" />
+              <path d="M12 5h1M5 12v1M19 12v1M12 19h1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-2xl font-black tracking-tighter text-slate-900 capitalize font-sans">
+              Qrytube
             </span>
           </Link>
 
           {/* Icon box button on right */}
           <Link to="/" aria-label={lang === 'ar' ? 'الرئيسية' : 'Home'} className="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.25rem] transition-all duration-300 shadow-md flex items-center justify-center group">
-            <QrCode className="w-5 h-5 group-hover:rotate-6 group-hover:scale-105 transition-transform" />
+            <QrCode className="w-5 h-5 group-hover:rotate-6 group-hover:scale-105 transition-transform" width={20} height={20} />
           </Link>
         </div>
       </header>
