@@ -67,14 +67,14 @@
 
       <!-- Main Text -->
       <div class="space-y-2">
-        <h2 class="text-xl md:text-2xl font-black text-white tracking-tight">جاري توجيهك الآن...</h2>
-        <p class="text-sm text-slate-400 font-medium">نقوم الآن بتحميل الرابط وتشغيل التطبيق الرسمي لضمان أفضل تفاعل.</p>
+        <h2 class="text-xl md:text-2xl font-black text-white tracking-tight">جاري تشغيل التطبيق...</h2>
+        <p class="text-sm text-slate-400 font-medium">نقوم بتحويل الرابط لفتح التطبيق الرسمي مباشرة لتسجيل الإعجاب والاشتراك بسهولة.</p>
       </div>
 
       <!-- Status Indicator -->
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-semibold text-indigo-400 tracking-wider">
+      <div id="status-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-semibold text-indigo-400 tracking-wider">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        توجيه ديناميكي ذكي آمن
+        توجيه تلقائي فوري وسريع ⚡
       </div>
     </div>
 
@@ -86,11 +86,11 @@
         </div>
       </div>
       <div class="space-y-2">
-        <h2 class="text-lg font-bold text-white leading-snug" id="error-title">عذراً، الرابط غير موجود أو منتهي الصلاحية</h2>
-        <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-medium" id="error-message">لم نتمكن من الحصول على الكود المطلوب من قاعدة البيانات. يرجى مراجعة مرسل الكود أو تجربة توليد كود جديد.</p>
+        <h2 class="text-lg font-bold text-white leading-snug" id="error-title">عذراً، الرابط غير موجود</h2>
+        <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-medium" id="error-message">لم نتمكن من العثور على رابط التوجيه الصحيح. يرجى تجربة توليد كود جديد.</p>
       </div>
       <div class="pt-4">
-        <a href="/" class="inline-block bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-3 px-6 rounded-xl border border-slate-700 transition-all">
+        <a href="/" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3 px-6 rounded-xl transition-all">
           الذهاب لمولد Qrytube
         </a>
       </div>
@@ -100,140 +100,166 @@
 
   <!-- Brand Footer -->
   <div class="mt-8 text-center space-y-1 text-slate-500 text-[11px] font-sans font-medium">
-    <p>© 2026 Qrytube Systems - كود QR ديناميكي ذكي</p>
-    <p>Dynamic Redirect Service • Pure Speed & Privacy</p>
+    <p>© 2026 Qrytube Systems - كود QR ذكي لتخطي المتصفح الداخلي</p>
+    <p>Direct App Launch Service • Instant Speed & Clean Routing</p>
   </div>
 
-  <!-- Firebase Logic integration -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <script>
+    // Calculate/Process Native Deep Link & Web Fallback URL
+    function computeDeepLinkAndWebUrl(input, plat) {
+      const clean = (input || "").trim();
+      if (!clean) return { deep: "", web: "" };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCM5cbYlFA1JpACE9LTZzxg9hH3tg4EPfI",
-      authDomain: "qrytube-2b3dc.firebaseapp.com",
-      projectId: "qrytube-2b3dc",
-      storageBucket: "qrytube-2b3dc.firebasestorage.app",
-      messagingSenderId: "131039163083",
-      appId: "1:131039163083:web:7db7c52d837cb70e21614e",
-      measurementId: "G-VFBG6JEKR4"
-    };
+      let webUrl = clean;
+      let deepLink = clean;
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+      // Ensure proper webUrl protocol
+      if (!/^https?:\/\//i.test(webUrl) && (webUrl.includes('.') || webUrl.includes('/'))) {
+        webUrl = 'https://' + webUrl;
+      }
 
-    // Parse URL parameter
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
+      switch (plat) {
+        case 'youtube':
+          try {
+            if (!/^https?:\/\//i.test(clean) && !clean.includes('.') && !clean.includes('/')) {
+              // It's a simple username/handle
+              const handle = clean.startsWith('@') ? clean : '@' + clean;
+              deepLink = `vnd.youtube://www.youtube.com/${handle}`;
+              webUrl = `https://www.youtube.com/${handle}`;
+            } else {
+              const urlObj = new URL(webUrl);
+              const hostname = urlObj.hostname.toLowerCase();
+              
+              if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+                if (hostname.includes('youtu.be')) {
+                  const videoId = urlObj.pathname.slice(1);
+                  const searchParams = urlObj.search;
+                  deepLink = `vnd.youtube://www.youtube.com/watch?v=${videoId}${searchParams ? '&' + searchParams.slice(1) : ''}`;
+                } else if (urlObj.pathname.startsWith('/shorts/')) {
+                  const videoId = urlObj.pathname.split('/')[2];
+                  deepLink = `vnd.youtube://www.youtube.com/watch?v=${videoId}`;
+                } else if (urlObj.pathname === '/watch' && urlObj.searchParams.has('v')) {
+                  deepLink = `vnd.youtube://www.youtube.com${urlObj.pathname}${urlObj.search}`;
+                } else {
+                  const pathAndQuery = urlObj.pathname + urlObj.search;
+                  deepLink = `vnd.youtube://www.youtube.com${pathAndQuery}`;
+                }
+              }
+            }
+          } catch (e) {
+            // Safe string fallback
+            if (clean.includes('youtu.be/')) {
+              const parts = clean.split('youtu.be/');
+              const videoId = parts[1]?.split('?')[0] || '';
+              deepLink = `vnd.youtube://www.youtube.com/watch?v=${videoId}`;
+            } else if (clean.includes('youtube.com/watch')) {
+              deepLink = clean.replace(/https?:\/\/(www\.|m\.)?youtube\.com/i, 'vnd.youtube://www.youtube.com');
+            } else if (clean.includes('youtube.com/shorts/')) {
+              const parts = clean.split('shorts/');
+              const videoId = parts[1]?.split('?')[0] || '';
+              deepLink = `vnd.youtube://www.youtube.com/watch?v=${videoId}`;
+            } else if (clean.includes('youtube.com/')) {
+              deepLink = clean.replace(/https?:\/\/(www\.|m\.)?youtube\.com/i, 'vnd.youtube://www.youtube.com');
+            } else {
+              const handle = clean.startsWith('@') ? clean : '@' + clean;
+              webUrl = `https://www.youtube.com/${handle}`;
+              deepLink = `vnd.youtube://www.youtube.com/${handle}`;
+            }
+          }
+          break;
 
-    if (!id) {
-       showError(
-         "لم يحدد معرّف صحيح للتوجيه",
-         "The redirect URL query requires a valid ID. Please add '?id=[UID]' to specify destination."
-       );
-    } else {
-       doRedirect(id);
+        case 'instagram':
+          if (clean.includes('instagram.com')) {
+            deepLink = webUrl.replace('https://www.instagram.com', 'instagram://').replace('https://instagram.com', 'instagram://').replace('http://www.instagram.com', 'instagram://').replace('http://instagram.com', 'instagram://');
+          } else {
+            const username = clean.startsWith('@') ? clean.slice(1) : clean;
+            webUrl = `https://www.instagram.com/${username}`;
+            deepLink = `instagram://user?username=${username}`;
+          }
+          break;
+
+        case 'facebook':
+          if (clean.includes('facebook.com')) {
+            // Highly robust facewebmodal scheme that forces Facebook App to load the target URL
+            deepLink = `fb://facewebmodal/f?href=${encodeURIComponent(webUrl)}`;
+          } else {
+            webUrl = `https://www.facebook.com/${clean}`;
+            deepLink = `fb://profile/${clean}`;
+          }
+          break;
+
+        case 'tiktok':
+          let tkUsername = clean;
+          if (clean.includes('tiktok.com')) {
+            try {
+              const urlObj = new URL(webUrl);
+              const pathParts = urlObj.pathname.split('/');
+              const partWithAt = pathParts.find(p => p.startsWith('@'));
+              if (partWithAt) {
+                tkUsername = partWithAt;
+              }
+            } catch(e) {}
+          }
+          if (tkUsername && !tkUsername.startsWith('@') && !tkUsername.includes('/') && !tkUsername.includes('.')) {
+            tkUsername = '@' + tkUsername;
+          }
+          
+          if (!clean.includes('.') && !clean.includes('/')) {
+            webUrl = `https://www.tiktok.com/${tkUsername}`;
+          }
+          
+          const isAndroid = /Android/i.test(navigator.userAgent);
+          if (isAndroid) {
+            deepLink = `snssdk1128://user/profile/${tkUsername}`;
+          } else {
+            deepLink = `tiktok://user?username=${tkUsername}`;
+          }
+          break;
+
+        default:
+          deepLink = webUrl;
+          break;
+      }
+
+      if (!/^https?:\/\//i.test(webUrl)) {
+        webUrl = 'https://' + webUrl;
+      }
+
+      return { deep: deepLink, web: webUrl };
     }
 
-    async function doRedirect(uid) {
-      try {
-        const docRef = doc(db, "qrcodes", uid);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
-          showError(
-            "كود الـ QR هذا غير متوفر أو محذوف",
-            "This dynamic QR code was not found in Firestore. Verify the ID or create a new one."
-          );
-          return;
-        }
-
-        const data = docSnap.data();
-        const originalUrl = data.originalUrl || "";
-        const targetUrl = data.targetUrl || "";
-        const platform = data.platform || "general";
-
-        if (!originalUrl) {
-          showError("عذراً، الرابط الموجه فارغ", "The destination link field contains empty values.");
-          return;
-        }
-
-        // Increment scan count in database
-        try {
-          await updateDoc(docRef, {
-            scans: increment(1)
-          });
-        } catch (e) {
-          console.error("Failed to update scan counter stats", e);
-        }
-
-        // Helper function to resolve absolute HTTP/HTTPS URL
-        function getCleanWebUrl(original, plat) {
-          let clean = (original || "").trim();
-          if (!clean) return "";
-
-          // If it's already a full http/https link
-          if (/^https?:\/\//i.test(clean)) {
-            return clean;
-          }
-
-          // Check if it's a username or handle based on platform
-          switch (plat) {
-            case 'youtube':
-              if (!clean.includes('.') && !clean.includes('/')) {
-                const handle = clean.startsWith('@') ? clean : '@' + clean;
-                return `https://www.youtube.com/${handle}`;
-              }
-              break;
-            case 'instagram':
-              if (!clean.includes('.') && !clean.includes('/')) {
-                return `https://www.instagram.com/${clean}`;
-              }
-              break;
-            case 'facebook':
-              if (!clean.includes('.') && !clean.includes('/')) {
-                return `https://www.facebook.com/${clean}`;
-              }
-              break;
-            case 'tiktok':
-              if (!clean.includes('.') && !clean.includes('/')) {
-                const handle = clean.startsWith('@') ? clean : '@' + clean;
-                return `https://www.tiktok.com/${handle}`;
-              }
-              break;
-          }
-
-          // Default fallback: if it doesn't have protocol but has dots or slashes
-          return `https://${clean}`;
-        }
-
-        const webUrl = getCleanWebUrl(originalUrl, platform);
-
-        // Check if device is desktop or mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const hasDeepProtocol = /^(vnd\.youtube:|fb:|instagram:|tg:|twitter:|snapchat:|whatsapp:)/i.test(targetUrl);
-
-        if (isMobile && hasDeepProtocol) {
-          // Attempt deep link execution on mobile
-          window.location.href = targetUrl;
-          
-          // Set safety fallback after a minimal delay to the HTTP/HTTPS link if standard deep link misses
-          setTimeout(() => {
-            window.location.replace(webUrl);
-          }, 800);
-        } else {
-          // Normal HTTP or HTTPS web link, or on desktop - direct replacement
-          window.location.replace(webUrl);
-        }
-
-      } catch (err) {
-        console.error("Firebase fetch error", err);
-        showError(
-          "حدث خطأ أثناء الاتصال بقاعدة البيانات",
-          "A network or cloud communication error occurred. Detailed technical details: " + err.message
-        );
+    // Execute Immediate Deep-Link Redirect
+    function performRedirect(deepLink, fallbackWebUrl) {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile && deepLink && deepLink !== fallbackWebUrl) {
+        // Try launching native application
+        window.location.href = deepLink;
+        
+        // Wait 900ms, if app did not open, fallback smoothly to browser URL
+        setTimeout(() => {
+          window.location.replace(fallbackWebUrl);
+        }, 900);
+      } else {
+        // Desktop or general platform - redirect to web version immediately
+        window.location.replace(fallbackWebUrl);
       }
+    }
+
+    // Parse query parameters
+    const params = new URLSearchParams(window.location.search);
+    const directUrl = params.get('url');
+    const platform = params.get('platform') || 'general';
+
+    if (directUrl) {
+      // Instantly process direct static parameters (Zero database delay!)
+      const result = computeDeepLinkAndWebUrl(directUrl, platform);
+      performRedirect(result.deep, result.web);
+    } else {
+      showError(
+        "يرجى توفير رابط صحيح للتوجيه",
+        "The redirect action requires a valid parameter. Please append a target '?url=...' inside the link structure."
+      );
     }
 
     function showError(title, msg) {
